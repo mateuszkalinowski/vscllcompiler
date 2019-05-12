@@ -1,5 +1,4 @@
 napisz "ala ma kota"
 x = "cokolwiek"
 y = "abc"
-napisz x
-napisz "koniec"
+z = "test"
