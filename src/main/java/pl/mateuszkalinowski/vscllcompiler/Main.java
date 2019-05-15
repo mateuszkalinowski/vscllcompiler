@@ -12,6 +12,7 @@ import pl.mateuszkalinowski.vscllcompiler.llvm.LLVMActions;
 import pl.mateuszkalinowski.vscllcompiler.preprocessor.Preprocessor;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -34,8 +35,6 @@ public class Main {
                 VSCLLParser parser = new VSCLLParser(tokens);
 
                 ParseTree tree = parser.prog();
-
-                System.out.println(tree.toStringTree(parser));
 
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(new LLVMActions(), tree);

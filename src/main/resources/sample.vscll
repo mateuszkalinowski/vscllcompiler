@@ -1,4 +1,7 @@
-napisz "ala ma kota"
-x = "cokolwiek"
-y = "abc"
-z = "test"
+int x;
+int y;
+int c;
+x = 2;
+y = 3;
+c = x + y;
+print(c);
