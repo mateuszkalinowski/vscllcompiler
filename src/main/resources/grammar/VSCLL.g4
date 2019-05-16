@@ -18,6 +18,8 @@ expresion : expresion '*' expresion     #multiplicate
           | INT                         #expresion_int
           | DOUBLE                      #expresion_double
           | STRING                      #expresion_string
+          | TOINT expresion             #expresion_to_int
+          | TODOUBLE expresion          #expresion_to_double
    ;
 
 print:	'print' '(' expresion ')'
@@ -35,6 +37,12 @@ assign: ID '=' expresion
     ;
 
 var: 'int' | 'double' | 'string'
+    ;
+
+TOINT: '(int)'
+    ;
+
+TODOUBLE: '(double)'
     ;
 
 STRING :  '"' ( ~('\\'|'"') )* '"'

@@ -52,6 +52,30 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitExpresion_id(VSCLLParser.Expresion_idContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code expresion_to_double}
+	 * labeled alternative in {@link VSCLLParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expresion_to_double}
+	 * labeled alternative in {@link VSCLLParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code expresion_to_int}
+	 * labeled alternative in {@link VSCLLParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expresion_to_int}
+	 * labeled alternative in {@link VSCLLParser#expresion}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code expresion_double}
 	 * labeled alternative in {@link VSCLLParser#expresion}.
 	 * @param ctx the parse tree

@@ -64,6 +64,30 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpresion_double(VSCLLParser.Expresion_doubleContext ctx) { }
 	/**
 	 * {@inheritDoc}

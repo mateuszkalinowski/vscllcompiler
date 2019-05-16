@@ -84,6 +84,7 @@ class LLVMGenerator{
         text += "declare i32 @printf(i8*, ...)\n";
         text += "declare i32 @scanf(i8*, ...)\n";
         text += "@strp = constant [4 x i8] c\"%d\\0A\\00\"\n";
+        text += "@strpd = constant [4 x i8] c\"%f\\0A\\00\"\n";
         text += "@strs = constant [3 x i8] c\"%d\\00\"\n";
         text += header_text;
         text += "define i32 @main() nounwind{\n";

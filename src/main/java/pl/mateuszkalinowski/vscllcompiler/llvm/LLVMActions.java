@@ -38,8 +38,55 @@ public class LLVMActions extends VSCLLBaseListener {
 
     }
 
+    @Override
+    public void exitDeclaration_with_initialization(VSCLLParser.Declaration_with_initializationContext ctx) {
+        if (variables.keySet().contains(ctx.ID().getText())) {
+            error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
+        }
 
 
+        if (ctx.var().getText().equals("int")) {
+            LLVMGenerator.declare_i32(ctx.ID().getText());
+            LLVMGenerator.assign_i32(ctx.ID().getText(), "0");
+            variables.put(ctx.ID().getText(), VariableType.INT);
+        } else if (ctx.var().getText().equals("double")) {
+            LLVMGenerator.declare_double(ctx.ID().getText());
+            LLVMGenerator.assign_double(ctx.ID().getText(), "0.0");
+            variables.put(ctx.ID().getText(), VariableType.DOUBLE);
+        } else if (ctx.var().getText().equals("string")) {
+            variables.put(ctx.ID().getText(), VariableType.EMPTY_STRING);
+        }
+
+
+
+
+        String ID = ctx.ID().getText();
+        Value v = stack.pop();
+
+        if( v.type == VariableType.INT ){
+
+            if(isKnownVariable(v.name)) {
+                LLVMGenerator.load_i32(v.name);
+                LLVMGenerator.assign_i32(ID, "%" + (LLVMGenerator.reg - 1));
+            }
+            else {
+                LLVMGenerator.assign_i32(ID, v.name);
+            }
+        }
+        if( v.type == VariableType.DOUBLE ){
+
+
+            if(isKnownVariable(v.name)) {
+                LLVMGenerator.load_double(v.name);
+                LLVMGenerator.assign_double(ID, "%" + (LLVMGenerator.reg - 1));
+            }
+            else {
+                LLVMGenerator.assign_double(ID, v.name);
+            }
+
+        }
+
+    }
 
     @Override
     public void exitExpresion_id(VSCLLParser.Expresion_idContext ctx) {
@@ -54,6 +101,31 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitExpresion_int(VSCLLParser.Expresion_intContext ctx) {
         stack.push(new Value(ctx.getText(), VariableType.INT));
+    }
+
+    @Override
+    public void exitExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx) {
+        Value value = stack.pop();
+        if(isKnownVariable(value.name)) {
+            LLVMGenerator.load_i32(value.name);
+            LLVMGenerator.sitofp("%" + (LLVMGenerator.reg - 1));
+        }
+        else {
+            LLVMGenerator.sitofp(value.name);
+        }
+        stack.push(new Value("%" + (LLVMGenerator.reg-1),VariableType.DOUBLE));
+    }
+
+    @Override
+    public void exitExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx) {
+        Value value = stack.pop();
+        if(isKnownVariable(value.name)) {
+            LLVMGenerator.load_double(value.name);
+            LLVMGenerator.fptosi("%" + (LLVMGenerator.reg - 1));
+        } else {
+            LLVMGenerator.fptosi(value.name);
+        }
+        stack.push(new Value("%" + (LLVMGenerator.reg-1),VariableType.INT));
     }
 
     @Override
