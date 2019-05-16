@@ -91,6 +91,17 @@ public class LLVMActions extends VSCLLBaseListener {
         Value v1 = stack.pop();
         Value v2 = stack.pop();
         if( v1.type == v2.type ) {
+
+            if(isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i32(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+
+            if(isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i32(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+
             if( v1.type == VariableType.INT ){
                 LLVMGenerator.mult_i32(v1.name, v2.name);
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), VariableType.INT) );

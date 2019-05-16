@@ -1,7 +1,9 @@
 int x;
 int y;
 int c;
+int z;
 x = 2;
 y = 3;
-c = x + y;
+z = 10;
+c = x + y * z;
 print(c);
