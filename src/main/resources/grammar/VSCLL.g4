@@ -5,6 +5,7 @@ prog: ( stat? NEWLINE )*
 
 stat:       print SC
        |    scani SC
+       |    scand SC
        |    declaration SC
        |    declaration_with_initialization SC
        |    assign SC
@@ -28,6 +29,9 @@ print:	'print' '(' expresion ')'
 scani: 'scani' '(' ID ')'
    ;
 
+scand: 'scand' '(' ID ')'
+    ;
+
 declaration: var ID
     ;
 
@@ -36,7 +40,7 @@ declaration_with_initialization: var ID '=' expresion
 assign: ID '=' expresion
     ;
 
-var: 'int' | 'double' | 'string'
+var: 'int' | 'double'
     ;
 
 TOINT: '(int)'
@@ -52,9 +56,13 @@ ID:   ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'0'..'9')*
    ;
 
 INT:   ('0'..'9'+)
+    |
+       '(''-'('0'..'9'+)')'
     ;
 
 DOUBLE: ('0'..'9'+)'.'('0'..'9'*)
+    |
+        '(''-'('0'..'9'+)'.'('0'..'9'*)')'
     ;
 
 NEWLINE:	'\r'? '\n'

@@ -168,6 +168,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitScani(VSCLLParser.ScaniContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#scand}.
+	 * @param ctx the parse tree
+	 */
+	void enterScand(VSCLLParser.ScandContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#scand}.
+	 * @param ctx the parse tree
+	 */
+	void exitScand(VSCLLParser.ScandContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#declaration}.
 	 * @param ctx the parse tree
 	 */

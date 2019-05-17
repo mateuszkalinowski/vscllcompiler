@@ -1,6 +1,5 @@
 package pl.mateuszkalinowski.vscllcompiler.llvm;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.mateuszkalinowski.vscllcompiler.entities.Value;
 import pl.mateuszkalinowski.vscllcompiler.enums.VariableType;
 import pl.mateuszkalinowski.vscllcompiler.generated.VSCLLBaseListener;
@@ -12,8 +11,8 @@ import java.util.Stack;
 
 public class LLVMActions extends VSCLLBaseListener {
 
-    Stack<Value> stack = new Stack<>();
-    HashMap<String, VariableType> variables = new HashMap<>();
+    private Stack<Value> stack = new Stack<>();
+    private HashMap<String, VariableType> variables = new HashMap<>();
 
 
     @Override
@@ -23,7 +22,6 @@ public class LLVMActions extends VSCLLBaseListener {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
         }
 
-
         if (ctx.var().getText().equals("int")) {
             LLVMGenerator.declare_i32(ctx.ID().getText());
             LLVMGenerator.assign_i32(ctx.ID().getText(), "0");
@@ -32,8 +30,6 @@ public class LLVMActions extends VSCLLBaseListener {
             LLVMGenerator.declare_double(ctx.ID().getText());
             LLVMGenerator.assign_double(ctx.ID().getText(), "0.0");
             variables.put(ctx.ID().getText(), VariableType.DOUBLE);
-        } else if (ctx.var().getText().equals("string")) {
-            variables.put(ctx.ID().getText(), VariableType.EMPTY_STRING);
         }
 
     }
@@ -53,8 +49,6 @@ public class LLVMActions extends VSCLLBaseListener {
             LLVMGenerator.declare_double(ctx.ID().getText());
             LLVMGenerator.assign_double(ctx.ID().getText(), "0.0");
             variables.put(ctx.ID().getText(), VariableType.DOUBLE);
-        } else if (ctx.var().getText().equals("string")) {
-            variables.put(ctx.ID().getText(), VariableType.EMPTY_STRING);
         }
 
 
@@ -95,12 +89,18 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitExpresion_double(VSCLLParser.Expresion_doubleContext ctx) {
-        stack.push(new Value(ctx.getText(), VariableType.DOUBLE));
+        String number = ctx.getText();
+        if(number.startsWith("(") && number.endsWith(")"))
+            number = number.substring(1,number.length()-1);
+        stack.push(new Value(number, VariableType.DOUBLE));
     }
 
     @Override
     public void exitExpresion_int(VSCLLParser.Expresion_intContext ctx) {
-        stack.push(new Value(ctx.getText(), VariableType.INT));
+        String number = ctx.getText();
+        if(number.startsWith("(") && number.endsWith(")"))
+            number = number.substring(1,number.length()-1);
+        stack.push(new Value(number, VariableType.INT));
     }
 
     @Override
@@ -134,14 +134,28 @@ public class LLVMActions extends VSCLLBaseListener {
         Value v2 = stack.pop();
         if (v1.type == v2.type) {
 
-            if(isKnownVariable(v1.name)) {
-                LLVMGenerator.load_i32(v1.name);
-                v1.name = "%" + (LLVMGenerator.reg - 1);
-            }
+            if(v1.type == VariableType.INT) {
 
-            if(isKnownVariable(v2.name)) {
-                LLVMGenerator.load_i32(v2.name);
-                v2.name = "%" + (LLVMGenerator.reg - 1);
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_i32(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_i32(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            }
+            else if(v1.type == VariableType.DOUBLE) {
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_double(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_double(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
             }
 
 
@@ -159,19 +173,77 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
+    public void exitSubtract(VSCLLParser.SubtractContext ctx) {
+        Value v1 = stack.pop();
+        Value v2 = stack.pop();
+        if (v1.type == v2.type) {
+
+            if(v1.type == VariableType.INT) {
+
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_i32(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_i32(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            }
+            else if(v1.type == VariableType.DOUBLE) {
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_double(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_double(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            }
+
+
+
+            if (v1.type == VariableType.INT) {
+                LLVMGenerator.sub_i32(v2.name, v1.name);
+                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
+            }
+            if (v1.type == VariableType.DOUBLE) {
+                LLVMGenerator.sub_double(v2.name, v1.name);
+                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
+            }
+        } else {
+            error(ctx.getStart().getLine(), "subtract type mismatch");
+        }
+    }
+    @Override
     public void exitMultiplicate(VSCLLParser.MultiplicateContext ctx) {
         Value v1 = stack.pop();
         Value v2 = stack.pop();
         if( v1.type == v2.type ) {
 
-            if(isKnownVariable(v1.name)) {
-                LLVMGenerator.load_i32(v1.name);
-                v1.name = "%" + (LLVMGenerator.reg - 1);
-            }
+            if(v1.type == VariableType.INT) {
 
-            if(isKnownVariable(v2.name)) {
-                LLVMGenerator.load_i32(v2.name);
-                v2.name = "%" + (LLVMGenerator.reg - 1);
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_i32(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_i32(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            }
+            else if(v1.type == VariableType.DOUBLE) {
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_double(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_double(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
             }
 
             if( v1.type == VariableType.INT ){
@@ -244,12 +316,22 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
+    public void exitScani(VSCLLParser.ScaniContext ctx) {
+        LLVMGenerator.scan_i32("%" + ctx.ID().getText());
+    }
+
+    @Override
+    public void exitScand(VSCLLParser.ScandContext ctx) {
+        LLVMGenerator.scan_double("%" + ctx.ID().getText());
+    }
+
+    @Override
     public void exitProg(VSCLLParser.ProgContext ctx) {
         System.out.println(LLVMGenerator.generate());
     }
 
 
-    void error(int line, String msg) {
+    private void error(int line, String msg) {
         System.err.println("Error, line " + line + ", " + msg);
         System.exit(1);
     }
@@ -257,9 +339,7 @@ public class LLVMActions extends VSCLLBaseListener {
     private boolean isKnownVariable(String toCheck) {
         if(toCheck.startsWith("%"))
             toCheck = toCheck.substring(1);
-        if(variables.keySet().contains(toCheck))
-            return true;
-        return false;
+        return variables.keySet().contains(toCheck);
     }
 
 

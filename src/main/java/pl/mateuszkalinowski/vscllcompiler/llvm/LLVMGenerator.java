@@ -21,6 +21,16 @@ class LLVMGenerator{
         reg++;
     }
 
+    static void scan_i32(String id) {
+        main_text += "%" + reg + "= call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32* "+ id + ")";
+        reg++;
+    }
+
+    static void scan_double(String id) {
+        main_text += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), double* "+ id+ ")\n";
+        reg++;
+    }
+
     static void declare_i32(String id){
         main_text += "%"+id+" = alloca i32\n";
     }
@@ -58,6 +68,16 @@ class LLVMGenerator{
         reg++;
     }
 
+    static void sub_i32(String val1, String val2){
+        main_text += "%"+reg+" = sub i32 "+val1+", "+val2+"\n";
+        reg++;
+    }
+
+    static void sub_double(String val1, String val2){
+        main_text += "%"+reg+" = fsub double "+val1+", "+val2+"\n";
+        reg++;
+    }
+
     static void mult_i32(String val1, String val2){
         main_text += "%"+reg+" = mul i32 "+val1+", "+val2+"\n";
         reg++;
@@ -85,7 +105,8 @@ class LLVMGenerator{
         text += "declare i32 @scanf(i8*, ...)\n";
         text += "@strp = constant [4 x i8] c\"%d\\0A\\00\"\n";
         text += "@strpd = constant [4 x i8] c\"%f\\0A\\00\"\n";
-        text += "@strs = constant [3 x i8] c\"%d\\00\"\n";
+        text += "@.str = constant [3 x i8] c\"%d\\00\"\n";
+        text += "@.str.1 = constant [4 x i8] c\"%lf\\00\"\n";
         text += header_text;
         text += "define i32 @main() nounwind{\n";
         text += "%tmpi = alloca i32\n";

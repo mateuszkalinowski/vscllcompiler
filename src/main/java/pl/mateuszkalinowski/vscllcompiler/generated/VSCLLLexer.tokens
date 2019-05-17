@@ -27,10 +27,10 @@ SC=21
 '('=6
 ')'=7
 'scani'=8
-'='=9
-'int'=10
-'double'=11
-'string'=12
+'scand'=9
+'='=10
+'int'=11
+'double'=12
 '(int)'=13
 '(double)'=14
 ';'=21
