@@ -18,12 +18,12 @@ expresion : expresion '*' expresion     #multiplicate
           | ID                          #expresion_id
           | INT                         #expresion_int
           | DOUBLE                      #expresion_double
-          | STRING                      #expresion_string
           | TOINT expresion             #expresion_to_int
           | TODOUBLE expresion          #expresion_to_double
    ;
 
-print:	'print' '(' expresion ')'
+print:	    'print' '(' expresion ')'       #print_expression
+        |   'print' '(' STRING ')'          #print_string
    ;
 
 scani: 'scani' '(' ID ')'

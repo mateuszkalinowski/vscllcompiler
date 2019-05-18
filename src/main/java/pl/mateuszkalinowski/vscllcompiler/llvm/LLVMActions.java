@@ -289,9 +289,8 @@ public class LLVMActions extends VSCLLBaseListener {
         }
     }
 
-
     @Override
-    public void exitPrint(VSCLLParser.PrintContext ctx) {
+    public void exitPrint_expression(VSCLLParser.Print_expressionContext ctx) {
         Value currentValue = stack.pop();
         if(currentValue.type.equals(VariableType.INT)) {
 
@@ -313,6 +312,13 @@ public class LLVMActions extends VSCLLBaseListener {
                 LLVMGenerator.print_double("%tmpd");
             }
         }
+    }
+
+    @Override
+    public void exitPrint_string(VSCLLParser.Print_stringContext ctx) {
+        String text = ctx.STRING().getText();
+        text = text.substring(1,text.length()-1);
+        LLVMGenerator.print_static_string(text);
     }
 
     @Override

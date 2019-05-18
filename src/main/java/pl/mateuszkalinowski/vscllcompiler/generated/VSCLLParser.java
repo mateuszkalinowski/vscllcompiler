@@ -369,18 +369,6 @@ public class VSCLLParser extends Parser {
 			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).exitExpresion_int(this);
 		}
 	}
-	public static class Expresion_stringContext extends ExpresionContext {
-		public TerminalNode STRING() { return getToken(VSCLLParser.STRING, 0); }
-		public Expresion_stringContext(ExpresionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).enterExpresion_string(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).exitExpresion_string(this);
-		}
-	}
 	public static class SubtractContext extends ExpresionContext {
 		public List<ExpresionContext> expresion() {
 			return getRuleContexts(ExpresionContext.class);
@@ -448,7 +436,7 @@ public class VSCLLParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(58);
+			setState(57);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ID:
@@ -479,23 +467,14 @@ public class VSCLLParser extends Parser {
 				match(DOUBLE);
 				}
 				break;
-			case STRING:
-				{
-				_localctx = new Expresion_stringContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				setState(53);
-				match(STRING);
-				}
-				break;
 			case TOINT:
 				{
 				_localctx = new Expresion_to_intContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(54);
+				setState(53);
 				match(TOINT);
-				setState(55);
+				setState(54);
 				expresion(2);
 				}
 				break;
@@ -504,9 +483,9 @@ public class VSCLLParser extends Parser {
 				_localctx = new Expresion_to_doubleContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(56);
+				setState(55);
 				match(TODOUBLE);
-				setState(57);
+				setState(56);
 				expresion(1);
 				}
 				break;
@@ -514,7 +493,7 @@ public class VSCLLParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(74);
+			setState(73);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -522,61 +501,61 @@ public class VSCLLParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(72);
+					setState(71);
 					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 					case 1:
 						{
 						_localctx = new MultiplicateContext(new ExpresionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(59);
+						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
 						setState(60);
-						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
-						setState(61);
 						match(T__0);
-						setState(62);
-						expresion(11);
+						setState(61);
+						expresion(10);
 						}
 						break;
 					case 2:
 						{
 						_localctx = new DivideContext(new ExpresionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(62);
+						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
 						setState(63);
-						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
-						setState(64);
 						match(T__1);
-						setState(65);
-						expresion(10);
+						setState(64);
+						expresion(9);
 						}
 						break;
 					case 3:
 						{
 						_localctx = new AddContext(new ExpresionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(65);
+						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(66);
-						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
-						setState(67);
 						match(T__2);
-						setState(68);
-						expresion(9);
+						setState(67);
+						expresion(8);
 						}
 						break;
 					case 4:
 						{
 						_localctx = new SubtractContext(new ExpresionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(68);
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(69);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(70);
 						match(T__3);
-						setState(71);
-						expresion(8);
+						setState(70);
+						expresion(7);
 						}
 						break;
 					}
 					} 
 				}
-				setState(76);
+				setState(75);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			}
@@ -594,20 +573,40 @@ public class VSCLLParser extends Parser {
 	}
 
 	public static class PrintContext extends ParserRuleContext {
-		public ExpresionContext expresion() {
-			return getRuleContext(ExpresionContext.class,0);
-		}
 		public PrintContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_print; }
+	 
+		public PrintContext() { }
+		public void copyFrom(PrintContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class Print_stringContext extends PrintContext {
+		public TerminalNode STRING() { return getToken(VSCLLParser.STRING, 0); }
+		public Print_stringContext(PrintContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).enterPrint(this);
+			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).enterPrint_string(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).exitPrint(this);
+			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).exitPrint_string(this);
+		}
+	}
+	public static class Print_expressionContext extends PrintContext {
+		public ExpresionContext expresion() {
+			return getRuleContext(ExpresionContext.class,0);
+		}
+		public Print_expressionContext(PrintContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).enterPrint_expression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof VSCLLListener ) ((VSCLLListener)listener).exitPrint_expression(this);
 		}
 	}
 
@@ -615,16 +614,37 @@ public class VSCLLParser extends Parser {
 		PrintContext _localctx = new PrintContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_print);
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(77);
-			match(T__4);
-			setState(78);
-			match(T__5);
-			setState(79);
-			expresion(0);
-			setState(80);
-			match(T__6);
+			setState(85);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
+			case 1:
+				_localctx = new Print_expressionContext(_localctx);
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(76);
+				match(T__4);
+				setState(77);
+				match(T__5);
+				setState(78);
+				expresion(0);
+				setState(79);
+				match(T__6);
+				}
+				break;
+			case 2:
+				_localctx = new Print_stringContext(_localctx);
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(81);
+				match(T__4);
+				setState(82);
+				match(T__5);
+				setState(83);
+				match(STRING);
+				setState(84);
+				match(T__6);
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -660,13 +680,13 @@ public class VSCLLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(82);
+			setState(87);
 			match(T__7);
-			setState(83);
+			setState(88);
 			match(T__5);
-			setState(84);
+			setState(89);
 			match(ID);
-			setState(85);
+			setState(90);
 			match(T__6);
 			}
 		}
@@ -703,13 +723,13 @@ public class VSCLLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(87);
+			setState(92);
 			match(T__8);
-			setState(88);
+			setState(93);
 			match(T__5);
-			setState(89);
+			setState(94);
 			match(ID);
-			setState(90);
+			setState(95);
 			match(T__6);
 			}
 		}
@@ -749,9 +769,9 @@ public class VSCLLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(92);
+			setState(97);
 			var();
-			setState(93);
+			setState(98);
 			match(ID);
 			}
 		}
@@ -794,13 +814,13 @@ public class VSCLLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(95);
+			setState(100);
 			var();
-			setState(96);
+			setState(101);
 			match(ID);
-			setState(97);
+			setState(102);
 			match(T__9);
-			setState(98);
+			setState(103);
 			expresion(0);
 			}
 		}
@@ -840,11 +860,11 @@ public class VSCLLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(100);
+			setState(105);
 			match(ID);
-			setState(101);
+			setState(106);
 			match(T__9);
-			setState(102);
+			setState(107);
 			expresion(0);
 			}
 		}
@@ -881,7 +901,7 @@ public class VSCLLParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(104);
+			setState(109);
 			_la = _input.LA(1);
 			if ( !(_la==T__10 || _la==T__11) ) {
 			_errHandler.recoverInline(this);
@@ -914,45 +934,46 @@ public class VSCLLParser extends Parser {
 	private boolean expresion_sempred(ExpresionContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 10);
-		case 1:
 			return precpred(_ctx, 9);
-		case 2:
+		case 1:
 			return precpred(_ctx, 8);
-		case 3:
+		case 2:
 			return precpred(_ctx, 7);
+		case 3:
+			return precpred(_ctx, 6);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\27m\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\27r\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\3"+
 		"\2\5\2\30\n\2\3\2\7\2\33\n\2\f\2\16\2\36\13\2\3\3\3\3\3\3\3\3\3\3\3\3"+
 		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\62\n\3\3\4\3\4\3"+
-		"\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4=\n\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+
-		"\4\3\4\3\4\3\4\7\4K\n\4\f\4\16\4N\13\4\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6"+
-		"\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3"+
-		"\n\3\n\3\13\3\13\3\13\2\3\6\f\2\4\6\b\n\f\16\20\22\24\2\3\3\2\r\16\2r"+
-		"\2\34\3\2\2\2\4\61\3\2\2\2\6<\3\2\2\2\bO\3\2\2\2\nT\3\2\2\2\fY\3\2\2\2"+
-		"\16^\3\2\2\2\20a\3\2\2\2\22f\3\2\2\2\24j\3\2\2\2\26\30\5\4\3\2\27\26\3"+
-		"\2\2\2\27\30\3\2\2\2\30\31\3\2\2\2\31\33\7\25\2\2\32\27\3\2\2\2\33\36"+
-		"\3\2\2\2\34\32\3\2\2\2\34\35\3\2\2\2\35\3\3\2\2\2\36\34\3\2\2\2\37 \5"+
-		"\b\5\2 !\7\27\2\2!\62\3\2\2\2\"#\5\n\6\2#$\7\27\2\2$\62\3\2\2\2%&\5\f"+
-		"\7\2&\'\7\27\2\2\'\62\3\2\2\2()\5\16\b\2)*\7\27\2\2*\62\3\2\2\2+,\5\20"+
-		"\t\2,-\7\27\2\2-\62\3\2\2\2./\5\22\n\2/\60\7\27\2\2\60\62\3\2\2\2\61\37"+
-		"\3\2\2\2\61\"\3\2\2\2\61%\3\2\2\2\61(\3\2\2\2\61+\3\2\2\2\61.\3\2\2\2"+
-		"\62\5\3\2\2\2\63\64\b\4\1\2\64=\7\22\2\2\65=\7\23\2\2\66=\7\24\2\2\67"+
-		"=\7\21\2\289\7\17\2\29=\5\6\4\4:;\7\20\2\2;=\5\6\4\3<\63\3\2\2\2<\65\3"+
-		"\2\2\2<\66\3\2\2\2<\67\3\2\2\2<8\3\2\2\2<:\3\2\2\2=L\3\2\2\2>?\f\f\2\2"+
-		"?@\7\3\2\2@K\5\6\4\rAB\f\13\2\2BC\7\4\2\2CK\5\6\4\fDE\f\n\2\2EF\7\5\2"+
-		"\2FK\5\6\4\13GH\f\t\2\2HI\7\6\2\2IK\5\6\4\nJ>\3\2\2\2JA\3\2\2\2JD\3\2"+
-		"\2\2JG\3\2\2\2KN\3\2\2\2LJ\3\2\2\2LM\3\2\2\2M\7\3\2\2\2NL\3\2\2\2OP\7"+
-		"\7\2\2PQ\7\b\2\2QR\5\6\4\2RS\7\t\2\2S\t\3\2\2\2TU\7\n\2\2UV\7\b\2\2VW"+
-		"\7\22\2\2WX\7\t\2\2X\13\3\2\2\2YZ\7\13\2\2Z[\7\b\2\2[\\\7\22\2\2\\]\7"+
-		"\t\2\2]\r\3\2\2\2^_\5\24\13\2_`\7\22\2\2`\17\3\2\2\2ab\5\24\13\2bc\7\22"+
-		"\2\2cd\7\f\2\2de\5\6\4\2e\21\3\2\2\2fg\7\22\2\2gh\7\f\2\2hi\5\6\4\2i\23"+
-		"\3\2\2\2jk\t\2\2\2k\25\3\2\2\2\b\27\34\61<JL";
+		"\4\3\4\3\4\3\4\3\4\3\4\5\4<\n\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+
+		"\4\3\4\3\4\7\4J\n\4\f\4\16\4M\13\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5"+
+		"\5\5X\n\5\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\t\3\t"+
+		"\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\13\3\13\3\13\2\3\6\f\2\4\6\b\n\f\16\20"+
+		"\22\24\2\3\3\2\r\16\2w\2\34\3\2\2\2\4\61\3\2\2\2\6;\3\2\2\2\bW\3\2\2\2"+
+		"\nY\3\2\2\2\f^\3\2\2\2\16c\3\2\2\2\20f\3\2\2\2\22k\3\2\2\2\24o\3\2\2\2"+
+		"\26\30\5\4\3\2\27\26\3\2\2\2\27\30\3\2\2\2\30\31\3\2\2\2\31\33\7\25\2"+
+		"\2\32\27\3\2\2\2\33\36\3\2\2\2\34\32\3\2\2\2\34\35\3\2\2\2\35\3\3\2\2"+
+		"\2\36\34\3\2\2\2\37 \5\b\5\2 !\7\27\2\2!\62\3\2\2\2\"#\5\n\6\2#$\7\27"+
+		"\2\2$\62\3\2\2\2%&\5\f\7\2&\'\7\27\2\2\'\62\3\2\2\2()\5\16\b\2)*\7\27"+
+		"\2\2*\62\3\2\2\2+,\5\20\t\2,-\7\27\2\2-\62\3\2\2\2./\5\22\n\2/\60\7\27"+
+		"\2\2\60\62\3\2\2\2\61\37\3\2\2\2\61\"\3\2\2\2\61%\3\2\2\2\61(\3\2\2\2"+
+		"\61+\3\2\2\2\61.\3\2\2\2\62\5\3\2\2\2\63\64\b\4\1\2\64<\7\22\2\2\65<\7"+
+		"\23\2\2\66<\7\24\2\2\678\7\17\2\28<\5\6\4\49:\7\20\2\2:<\5\6\4\3;\63\3"+
+		"\2\2\2;\65\3\2\2\2;\66\3\2\2\2;\67\3\2\2\2;9\3\2\2\2<K\3\2\2\2=>\f\13"+
+		"\2\2>?\7\3\2\2?J\5\6\4\f@A\f\n\2\2AB\7\4\2\2BJ\5\6\4\13CD\f\t\2\2DE\7"+
+		"\5\2\2EJ\5\6\4\nFG\f\b\2\2GH\7\6\2\2HJ\5\6\4\tI=\3\2\2\2I@\3\2\2\2IC\3"+
+		"\2\2\2IF\3\2\2\2JM\3\2\2\2KI\3\2\2\2KL\3\2\2\2L\7\3\2\2\2MK\3\2\2\2NO"+
+		"\7\7\2\2OP\7\b\2\2PQ\5\6\4\2QR\7\t\2\2RX\3\2\2\2ST\7\7\2\2TU\7\b\2\2U"+
+		"V\7\21\2\2VX\7\t\2\2WN\3\2\2\2WS\3\2\2\2X\t\3\2\2\2YZ\7\n\2\2Z[\7\b\2"+
+		"\2[\\\7\22\2\2\\]\7\t\2\2]\13\3\2\2\2^_\7\13\2\2_`\7\b\2\2`a\7\22\2\2"+
+		"ab\7\t\2\2b\r\3\2\2\2cd\5\24\13\2de\7\22\2\2e\17\3\2\2\2fg\5\24\13\2g"+
+		"h\7\22\2\2hi\7\f\2\2ij\5\6\4\2j\21\3\2\2\2kl\7\22\2\2lm\7\f\2\2mn\5\6"+
+		"\4\2n\23\3\2\2\2op\t\2\2\2p\25\3\2\2\2\t\27\34\61;IKW";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

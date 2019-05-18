@@ -100,18 +100,6 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitExpresion_int(VSCLLParser.Expresion_intContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code expresion_string}
-	 * labeled alternative in {@link VSCLLParser#expresion}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpresion_string(VSCLLParser.Expresion_stringContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code expresion_string}
-	 * labeled alternative in {@link VSCLLParser#expresion}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpresion_string(VSCLLParser.Expresion_stringContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code subtract}
 	 * labeled alternative in {@link VSCLLParser#expresion}.
 	 * @param ctx the parse tree
@@ -148,15 +136,29 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitMultiplicate(VSCLLParser.MultiplicateContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VSCLLParser#print}.
+	 * Enter a parse tree produced by the {@code print_expression}
+	 * labeled alternative in {@link VSCLLParser#print}.
 	 * @param ctx the parse tree
 	 */
-	void enterPrint(VSCLLParser.PrintContext ctx);
+	void enterPrint_expression(VSCLLParser.Print_expressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link VSCLLParser#print}.
+	 * Exit a parse tree produced by the {@code print_expression}
+	 * labeled alternative in {@link VSCLLParser#print}.
 	 * @param ctx the parse tree
 	 */
-	void exitPrint(VSCLLParser.PrintContext ctx);
+	void exitPrint_expression(VSCLLParser.Print_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code print_string}
+	 * labeled alternative in {@link VSCLLParser#print}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrint_string(VSCLLParser.Print_stringContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code print_string}
+	 * labeled alternative in {@link VSCLLParser#print}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrint_string(VSCLLParser.Print_stringContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#scani}.
 	 * @param ctx the parse tree

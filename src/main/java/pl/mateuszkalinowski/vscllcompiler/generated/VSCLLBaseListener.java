@@ -112,18 +112,6 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpresion_string(VSCLLParser.Expresion_stringContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpresion_string(VSCLLParser.Expresion_stringContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterSubtract(VSCLLParser.SubtractContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -160,13 +148,25 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPrint(VSCLLParser.PrintContext ctx) { }
+	@Override public void enterPrint_expression(VSCLLParser.Print_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPrint(VSCLLParser.PrintContext ctx) { }
+	@Override public void exitPrint_expression(VSCLLParser.Print_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrint_string(VSCLLParser.Print_stringContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrint_string(VSCLLParser.Print_stringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
