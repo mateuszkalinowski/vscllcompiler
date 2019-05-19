@@ -136,6 +136,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpression_index(VSCLLParser.Expression_indexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression_index(VSCLLParser.Expression_indexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMultiplicate(VSCLLParser.MultiplicateContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -172,25 +184,49 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterScani(VSCLLParser.ScaniContext ctx) { }
+	@Override public void enterScani_id(VSCLLParser.Scani_idContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitScani(VSCLLParser.ScaniContext ctx) { }
+	@Override public void exitScani_id(VSCLLParser.Scani_idContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterScand(VSCLLParser.ScandContext ctx) { }
+	@Override public void enterScani_array(VSCLLParser.Scani_arrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitScand(VSCLLParser.ScandContext ctx) { }
+	@Override public void exitScani_array(VSCLLParser.Scani_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterScand_id(VSCLLParser.Scand_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitScand_id(VSCLLParser.Scand_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterScand_array(VSCLLParser.Scand_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitScand_array(VSCLLParser.Scand_arrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -215,6 +251,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeclaration_array(VSCLLParser.Declaration_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeclaration_array(VSCLLParser.Declaration_arrayContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -268,6 +316,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAssing_to_array(VSCLLParser.Assing_to_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssing_to_array(VSCLLParser.Assing_to_arrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterVar(VSCLLParser.VarContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -287,6 +347,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitText_pointer(VSCLLParser.Text_pointerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIndex(VSCLLParser.IndexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIndex(VSCLLParser.IndexContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

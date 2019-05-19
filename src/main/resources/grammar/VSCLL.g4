@@ -11,43 +11,51 @@ stat:       print SC
        |    assign SC
    ;
 
-expresion : expresion '*' expresion     #multiplicate
-          | expresion '/' expresion     #divide
-          | expresion '+' expresion     #add
-          | expresion '-' expresion     #subtract
+expression : expression '*' expression     #multiplicate
+          | expression '/' expression     #divide
+          | expression '+' expression     #add
+          | expression '-' expression     #subtract
+          | ID index                    #expression_index
           | ID                          #expresion_id
           | INT                         #expresion_int
           | DOUBLE                      #expresion_double
-          | TOINT expresion             #expresion_to_int
-          | TODOUBLE expresion          #expresion_to_double
+          | TOINT expression             #expresion_to_int
+          | TODOUBLE expression          #expresion_to_double
    ;
 
-print:	    'print' '(' expresion ')'       #print_expression
+print:	    'print' '(' expression ')'       #print_expression
         |   'print' '(' STRING ')'          #print_string
    ;
 
-scani: 'scani' '(' ID ')'
+scani:      'scani' '(' ID ')'                   #scani_id
+       |    'scani' '(' ID index ')'             #scani_array
    ;
 
-scand: 'scand' '(' ID ')'
+scand:      'scand' '(' ID ')'                   #scand_id
+       |    'scand' '(' ID index ')'             #scand_array
     ;
 
 declaration:   var ID                   #declaration_variable
              | text_pointer ID          #declaration_text_pointer
+             | var ID index             #declaration_array
     ;
 
-declaration_with_initialization:    var ID '=' expresion            #declaration_with_initialization_variable
+declaration_with_initialization:    var ID '=' expression            #declaration_with_initialization_variable
                                 |   text_pointer ID '=' STRING      #declaration_with_initialization_text_pointer
     ;
 
-assign:     ID '=' expresion            #assing_variable
+assign:     ID '=' expression            #assing_variable
         |   ID '=' STRING               #assing_text_pointer
+        |   ID index '=' expression      #assing_to_array
     ;
 
 var: 'int' | 'double'
     ;
 
 text_pointer: 'char*';
+
+index: '[' INT ']'
+    ;
 
 TOINT: '(int)'
     ;

@@ -1,14 +1,4 @@
-/*
-int x;
-int y;
-int c;
-print("Podaj pierwsza liczbe:");
-scani(x);
-print("Podaj druga liczbe:");
-scani(y);
-c = x + y;
-print("Ich suma to");
-print(c);
-*/
-char* test = "Mateusz";
-print(test);
+double tab[2];
+print("Podaj wartosc");
+scand(tab[0]);
+print(tab[0]);
