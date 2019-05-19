@@ -35,9 +35,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx) {
-        LLVMGenerator.declare_text_pointer(ctx.ID().getText());
-
-        variables.put(ctx.ID().getText(), VariableType.EMPTY_TEXT_POINTER);
+        error(ctx.getStart().getLine(),"It must have provided size, or be initialized");
     }
 
     @Override
@@ -106,8 +104,6 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx) {
         LLVMGenerator.declare_text_pointer(ctx.ID().getText());
-        variables.put(ctx.ID().getText(), VariableType.EMPTY_TEXT_POINTER);
-
         String text = ctx.STRING().getText();
         text = text.substring(1, text.length() - 1);
         LLVMGenerator.assign_text_pointer(ctx.ID().getText(), text);
@@ -416,8 +412,6 @@ public class LLVMActions extends VSCLLBaseListener {
             }
         } else if (currentValue.type.equals(VariableType.TEXT_POINTER)) {
             LLVMGenerator.print_text_pointer(currentValue.name);
-        } else if (currentValue.type.equals(VariableType.EMPTY_TEXT_POINTER)) {
-            error(ctx.getStart().getLine(), String.format("Variable '%s' hasn't been initialized", ctx.expression()));
         }
     }
 

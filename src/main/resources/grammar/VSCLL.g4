@@ -36,12 +36,12 @@ scand:      'scand' '(' ID ')'                   #scand_id
     ;
 
 declaration:   var ID                   #declaration_variable
-             | text_pointer ID          #declaration_text_pointer
+             | text_pointer ID '[]'     #declaration_text_pointer
              | var ID index             #declaration_array
     ;
 
 declaration_with_initialization:    var ID '=' expression            #declaration_with_initialization_variable
-                                |   text_pointer ID '=' STRING      #declaration_with_initialization_text_pointer
+                                |   text_pointer ID'[]' '=' STRING      #declaration_with_initialization_text_pointer
     ;
 
 assign:     ID '=' expression            #assing_variable
@@ -52,7 +52,7 @@ assign:     ID '=' expression            #assing_variable
 var: 'int' | 'double'
     ;
 
-text_pointer: 'char*';
+text_pointer: 'char';
 
 index: '[' INT ']'
     ;

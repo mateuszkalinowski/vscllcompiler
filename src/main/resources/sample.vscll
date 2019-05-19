@@ -1,2 +1,2 @@
-char* test = "Mateusz";
+char test[];
 print(test);
