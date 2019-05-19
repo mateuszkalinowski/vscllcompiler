@@ -1,4 +1,2 @@
-double tab[2];
-print("Podaj wartosc");
-scand(tab[0]);
-print(tab[0]);
+char* test = "Mateusz";
+print(test);

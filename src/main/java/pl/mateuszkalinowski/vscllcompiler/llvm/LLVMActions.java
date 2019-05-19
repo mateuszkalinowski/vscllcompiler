@@ -18,7 +18,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitDeclaration_variable(VSCLLParser.Declaration_variableContext ctx) {
-        if (variables.keySet().contains(ctx.ID().getText())) {
+        if (variables.keySet().contains(ctx.ID().getText()) || tables.containsKey(ctx.ID().getText())) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
         }
 
@@ -45,6 +45,11 @@ public class LLVMActions extends VSCLLBaseListener {
         String size = ctx.index().INT().getText();
         String id = ctx.ID().getText();
 
+        if(tables.containsKey(id) || variables.containsKey(id)) {
+            error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
+            return;
+        }
+
         if (ctx.var().getText().equals("int")) {
             LLVMGenerator.declare_i32_array(id, size);
             tables.put(id, new Table(size, VariableType.INT));
@@ -57,7 +62,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx) {
-        if (variables.keySet().contains(ctx.ID().getText())) {
+        if (variables.keySet().contains(ctx.ID().getText()) || tables.containsKey(ctx.ID().getText())) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
         }
 
