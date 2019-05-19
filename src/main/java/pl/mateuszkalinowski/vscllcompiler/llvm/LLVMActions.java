@@ -14,10 +14,8 @@ public class LLVMActions extends VSCLLBaseListener {
     private Stack<Value> stack = new Stack<>();
     private HashMap<String, VariableType> variables = new HashMap<>();
 
-
     @Override
-    public void exitDeclaration(VSCLLParser.DeclarationContext ctx) {
-
+    public void exitDeclaration_variable(VSCLLParser.Declaration_variableContext ctx) {
         if (variables.keySet().contains(ctx.ID().getText())) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
         }
@@ -31,11 +29,17 @@ public class LLVMActions extends VSCLLBaseListener {
             LLVMGenerator.assign_double(ctx.ID().getText(), "0.0");
             variables.put(ctx.ID().getText(), VariableType.DOUBLE);
         }
-
     }
 
     @Override
-    public void exitDeclaration_with_initialization(VSCLLParser.Declaration_with_initializationContext ctx) {
+    public void exitDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx) {
+        LLVMGenerator.declare_text_pointer(ctx.ID().getText());
+
+        variables.put(ctx.ID().getText(),VariableType.EMPTY_TEXT_POINTER);
+    }
+
+    @Override
+    public void exitDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx) {
         if (variables.keySet().contains(ctx.ID().getText())) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
         }
@@ -79,12 +83,30 @@ public class LLVMActions extends VSCLLBaseListener {
             }
 
         }
+    }
+
+    @Override
+    public void exitDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx) {
+        LLVMGenerator.declare_text_pointer(ctx.ID().getText());
+        variables.put(ctx.ID().getText(),VariableType.EMPTY_TEXT_POINTER);
+
+        String text = ctx.STRING().getText();
+        text = text.substring(1,text.length()-1);
+        LLVMGenerator.assing_text_pointer(ctx.ID().getText(),text);
+        variables.put(ctx.ID().getText(),VariableType.TEXT_POINTER);
 
     }
 
     @Override
     public void exitExpresion_id(VSCLLParser.Expresion_idContext ctx) {
-        stack.push(new Value("%" + ctx.getText(), variables.get(ctx.getText())));
+
+        if(variables.containsKey(ctx.getText())) {
+            stack.push(new Value("%" + ctx.getText(), variables.get(ctx.getText())));
+        }
+        else {
+            error(ctx.getStart().getLine(),String.format("Variable '%s' doesn't exist",ctx.getText()));
+        }
+
     }
 
     @Override
@@ -260,7 +282,7 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
-    public void exitAssign(VSCLLParser.AssignContext ctx) {
+    public void exitAssing_variable(VSCLLParser.Assing_variableContext ctx) {
         String ID = ctx.ID().getText();
         Value v = stack.pop();
 
@@ -290,6 +312,15 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
+    public void exitAssing_text_pointer(VSCLLParser.Assing_text_pointerContext ctx) {
+        String text = ctx.STRING().getText();
+        text = text.substring(1,text.length()-1);
+        LLVMGenerator.assing_text_pointer(ctx.ID().getText(),text);
+        variables.put(ctx.ID().getText(),VariableType.TEXT_POINTER);
+    }
+
+
+    @Override
     public void exitPrint_expression(VSCLLParser.Print_expressionContext ctx) {
         Value currentValue = stack.pop();
         if(currentValue.type.equals(VariableType.INT)) {
@@ -311,6 +342,12 @@ public class LLVMActions extends VSCLLBaseListener {
                 LLVMGenerator.assign_double("tmpd",currentValue.name);
                 LLVMGenerator.print_double("%tmpd");
             }
+        }
+        else if(currentValue.type.equals(VariableType.TEXT_POINTER)) {
+            LLVMGenerator.print_text_pointer(currentValue.name);
+        }
+        else if (currentValue.type.equals(VariableType.EMPTY_TEXT_POINTER)) {
+            error(ctx.getStart().getLine(),String.format("Variable '%s' hasn't been initialized",ctx.expresion()));
         }
     }
 

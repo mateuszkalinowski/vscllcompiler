@@ -5,7 +5,7 @@ class LLVMGenerator{
     static String header_text = "";
     static String main_text = "";
     static int reg = 1;
-    static int str_i = 0;
+    static int str_i = 3;
 
     static void print_i32(String id){
         main_text += "%"+reg+" = load i32, i32* "+id+"\n";
@@ -21,11 +21,18 @@ class LLVMGenerator{
         reg++;
     }
 
+    static void print_text_pointer(String id) {
+        main_text += "%"+reg + " = load i8*, i8** "+ id +", align 8\n";
+        reg++;
+        main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.2, i32 0, i32 0), i8* %" + (reg-1) + ")\n";
+        reg++;
+    }
+
     static void print_static_string(String text){
         int str_len = text.length();
         String str_type = "["+(str_len+2)+" x i8]";
-        header_text += "@str"+str_i+" = constant"+str_type+" c\""+text+"\\0A\\00\"\n";
-        main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( "+str_type+", "+str_type+"* @str"+str_i+", i32 0, i32 0))\n";
+        header_text += "@.str."+str_i+" = constant"+str_type+" c\""+text+"\\0A\\00\"\n";
+        main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( "+str_type+", "+str_type+"* @.str."+str_i+", i32 0, i32 0))\n";
         str_i++;
         reg++;
     }
@@ -48,6 +55,10 @@ class LLVMGenerator{
         main_text += "%"+id+" = alloca double\n";
     }
 
+    static void declare_text_pointer(String id) {
+        main_text += "%"+id+" = alloca i8*, align 8\n";
+    }
+
     static void assign_i32(String id, String value){
         main_text += "store i32 "+value+", i32* %"+id+"\n";
     }
@@ -56,6 +67,13 @@ class LLVMGenerator{
         main_text += "store double "+value+", double* %"+id+"\n";
     }
 
+    static void assing_text_pointer(String id, String text) {
+        int str_len = text.length();
+        String str_type = "["+(str_len+2)+" x i8]";
+        header_text += "@.str."+str_i+" = constant"+str_type+" c\""+text+"\\0A\\00\"\n";
+        str_i++;
+        main_text += "store i8* getelementptr inbounds (" + str_type+", " + str_type+ "* @.str."+ (str_i-1) +", i32 0, i32 0), i8** %" + id + ", align 8\n";
+    }
 
     static void load_i32(String id){
         main_text += "%"+reg+" = load i32, i32* "+id+"\n";
@@ -116,6 +134,7 @@ class LLVMGenerator{
         text += "@strpd = constant [4 x i8] c\"%f\\0A\\00\"\n";
         text += "@.str = constant [3 x i8] c\"%d\\00\"\n";
         text += "@.str.1 = constant [4 x i8] c\"%lf\\00\"\n";
+        text += "@.str.2 = constant [3 x i8] c\"%s\\00\"\n";
         text += header_text;
         text += "define i32 @main() nounwind{\n";
         text += "%tmpi = alloca i32\n";

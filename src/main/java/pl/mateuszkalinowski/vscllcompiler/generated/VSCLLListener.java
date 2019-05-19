@@ -180,35 +180,77 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitScand(VSCLLParser.ScandContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VSCLLParser#declaration}.
+	 * Enter a parse tree produced by the {@code declaration_variable}
+	 * labeled alternative in {@link VSCLLParser#declaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaration(VSCLLParser.DeclarationContext ctx);
+	void enterDeclaration_variable(VSCLLParser.Declaration_variableContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link VSCLLParser#declaration}.
+	 * Exit a parse tree produced by the {@code declaration_variable}
+	 * labeled alternative in {@link VSCLLParser#declaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaration(VSCLLParser.DeclarationContext ctx);
+	void exitDeclaration_variable(VSCLLParser.Declaration_variableContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VSCLLParser#declaration_with_initialization}.
+	 * Enter a parse tree produced by the {@code declaration_text_pointer}
+	 * labeled alternative in {@link VSCLLParser#declaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterDeclaration_with_initialization(VSCLLParser.Declaration_with_initializationContext ctx);
+	void enterDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link VSCLLParser#declaration_with_initialization}.
+	 * Exit a parse tree produced by the {@code declaration_text_pointer}
+	 * labeled alternative in {@link VSCLLParser#declaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitDeclaration_with_initialization(VSCLLParser.Declaration_with_initializationContext ctx);
+	void exitDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VSCLLParser#assign}.
+	 * Enter a parse tree produced by the {@code declaration_with_initialization_variable}
+	 * labeled alternative in {@link VSCLLParser#declaration_with_initialization}.
 	 * @param ctx the parse tree
 	 */
-	void enterAssign(VSCLLParser.AssignContext ctx);
+	void enterDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link VSCLLParser#assign}.
+	 * Exit a parse tree produced by the {@code declaration_with_initialization_variable}
+	 * labeled alternative in {@link VSCLLParser#declaration_with_initialization}.
 	 * @param ctx the parse tree
 	 */
-	void exitAssign(VSCLLParser.AssignContext ctx);
+	void exitDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code declaration_with_initialization_text_pointer}
+	 * labeled alternative in {@link VSCLLParser#declaration_with_initialization}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code declaration_with_initialization_text_pointer}
+	 * labeled alternative in {@link VSCLLParser#declaration_with_initialization}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code assing_variable}
+	 * labeled alternative in {@link VSCLLParser#assign}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssing_variable(VSCLLParser.Assing_variableContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assing_variable}
+	 * labeled alternative in {@link VSCLLParser#assign}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssing_variable(VSCLLParser.Assing_variableContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code assing_text_pointer}
+	 * labeled alternative in {@link VSCLLParser#assign}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssing_text_pointer(VSCLLParser.Assing_text_pointerContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assing_text_pointer}
+	 * labeled alternative in {@link VSCLLParser#assign}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssing_text_pointer(VSCLLParser.Assing_text_pointerContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#var}.
 	 * @param ctx the parse tree
@@ -219,4 +261,14 @@ public interface VSCLLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVar(VSCLLParser.VarContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#text_pointer}.
+	 * @param ctx the parse tree
+	 */
+	void enterText_pointer(VSCLLParser.Text_pointerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#text_pointer}.
+	 * @param ctx the parse tree
+	 */
+	void exitText_pointer(VSCLLParser.Text_pointerContext ctx);
 }

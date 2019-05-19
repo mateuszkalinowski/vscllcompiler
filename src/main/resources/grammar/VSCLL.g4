@@ -32,16 +32,22 @@ scani: 'scani' '(' ID ')'
 scand: 'scand' '(' ID ')'
     ;
 
-declaration: var ID
+declaration:   var ID                   #declaration_variable
+             | text_pointer ID          #declaration_text_pointer
     ;
 
-declaration_with_initialization: var ID '=' expresion
+declaration_with_initialization:    var ID '=' expresion            #declaration_with_initialization_variable
+                                |   text_pointer ID '=' STRING      #declaration_with_initialization_text_pointer
     ;
-assign: ID '=' expresion
+
+assign:     ID '=' expresion            #assing_variable
+        |   ID '=' STRING               #assing_text_pointer
     ;
 
 var: 'int' | 'double'
     ;
+
+text_pointer: 'char*';
 
 TOINT: '(int)'
     ;

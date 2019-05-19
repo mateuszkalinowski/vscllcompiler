@@ -196,37 +196,73 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaration(VSCLLParser.DeclarationContext ctx) { }
+	@Override public void enterDeclaration_variable(VSCLLParser.Declaration_variableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaration(VSCLLParser.DeclarationContext ctx) { }
+	@Override public void exitDeclaration_variable(VSCLLParser.Declaration_variableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaration_with_initialization(VSCLLParser.Declaration_with_initializationContext ctx) { }
+	@Override public void enterDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaration_with_initialization(VSCLLParser.Declaration_with_initializationContext ctx) { }
+	@Override public void exitDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAssign(VSCLLParser.AssignContext ctx) { }
+	@Override public void enterDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAssign(VSCLLParser.AssignContext ctx) { }
+	@Override public void exitDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssing_variable(VSCLLParser.Assing_variableContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssing_variable(VSCLLParser.Assing_variableContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssing_text_pointer(VSCLLParser.Assing_text_pointerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssing_text_pointer(VSCLLParser.Assing_text_pointerContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -239,6 +275,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitVar(VSCLLParser.VarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterText_pointer(VSCLLParser.Text_pointerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitText_pointer(VSCLLParser.Text_pointerContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
