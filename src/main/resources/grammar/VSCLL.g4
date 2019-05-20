@@ -3,6 +3,9 @@ grammar VSCLL;
 prog: ( stat? NEWLINE )*
     ;
 
+if_block: (stat? NEWLINE)*
+    ;
+
 stat:           print SC
           |     prints SC
           |     scani SC
@@ -10,7 +13,16 @@ stat:           print SC
           |     declaration SC
           |     declaration_with_initialization SC
           |     assign SC
+          |     if_statement
    ;
+
+if_statement: 'if' '('condition')' '{' if_block '}'
+    ;
+
+condition:      expression '<'  expression         #condition_less_than
+          |     expression '>'  expression         #condition_greater_than
+          |     expression '==' expression         #condition_equal
+          ;
 
 expression :    TODOUBLE expression                #expression_to_double
           |     TOINT expression                   #expression_to_int

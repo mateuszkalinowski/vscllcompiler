@@ -13,8 +13,19 @@ import java.util.Stack;
 public class LLVMActions extends VSCLLBaseListener {
 
     private Stack<Value> stack = new Stack<>();
+    private Stack<String> blocksStack = new Stack<>();
+    private Stack<String> conditionalJumpsStack = new Stack<>();
+
     private HashMap<String, VariableType> variables = new HashMap<>();
     private HashMap<String, Table> tables = new HashMap<>();
+
+
+    /*
+
+          ETAP I - TYPY, ZMIENNE, ODCZYT/ZAPIS Z KONSOLI
+
+
+     */
 
     @Override
     public void exitDeclaration_variable(VSCLLParser.Declaration_variableContext ctx) {
@@ -598,6 +609,90 @@ public class LLVMActions extends VSCLLBaseListener {
         } else {
             error(ctx.getStart().getLine(), String.format("Table '%s' doesn't exists", id));
         }
+    }
+
+    /*
+
+            ETAP II - FUNKCJE, BLOKI, INSTRUKCJE WARUNKOWE, PĘTLE
+
+     */
+
+    @Override
+    public void exitCondition_equal(VSCLLParser.Condition_equalContext ctx) {
+        Value v1 = stack.pop();
+        Value v2 = stack.pop();
+        if (v1.type.equals(v2.type)) {
+
+            if (v1.type == VariableType.INT || v1.type == VariableType.CHAR) {
+
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_i32(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_i32(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            } else if (v1.type == VariableType.DOUBLE) {
+                if (isKnownVariable(v1.name)) {
+                    LLVMGenerator.load_double(v1.name);
+                    v1.name = "%" + (LLVMGenerator.reg - 1);
+                }
+
+                if (isKnownVariable(v2.name)) {
+                    LLVMGenerator.load_double(v2.name);
+                    v2.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            }
+
+
+            if (v1.type == VariableType.INT) {
+                LLVMGenerator.compare_i32(v1.name,v2.name);
+                stack.push(new Value("%"+(LLVMGenerator.reg-1),VariableType.BOOLEAN));
+            }
+            if (v1.type == VariableType.DOUBLE) {
+                LLVMGenerator.compare_double(v1.name,v2.name);
+                stack.push(new Value("%"+(LLVMGenerator.reg-1),VariableType.BOOLEAN));
+            }
+        } else {
+            error(ctx.getStart().getLine(), "comparison type mismatch");
+        }
+    }
+
+    @Override
+    public void enterIf_block(VSCLLParser.If_blockContext ctx) {
+        String value = blocksStack.pop();
+        String preds = value;
+        String toAdd = LLVMGenerator.conditional_jump();
+        conditionalJumpsStack.push(toAdd.substring(0,toAdd.length()-1));
+        LLVMGenerator.label(preds);
+        blocksStack.push(value);
+        blocksStack.push("%"+(LLVMGenerator.reg-1));
+    }
+
+    @Override
+    public void exitIf_block(VSCLLParser.If_blockContext ctx) {
+        String value = blocksStack.pop();
+        String value2 = blocksStack.pop();
+        String preds = value + "," + value2;
+        LLVMGenerator.conditional_jump_finish(conditionalJumpsStack.pop());
+        LLVMGenerator.static_jump();
+        LLVMGenerator.label(preds);
+        blocksStack.push(value);
+        blocksStack.push("%"+(LLVMGenerator.reg-1));
+    }
+
+    /*
+
+            FINALIZACJA I FUNKCJE POMOCNICZE
+
+     */
+
+
+    @Override
+    public void enterProg(VSCLLParser.ProgContext ctx) {
+        blocksStack.push("%0");
     }
 
     @Override

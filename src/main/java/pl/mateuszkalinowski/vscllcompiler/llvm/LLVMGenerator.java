@@ -220,6 +220,37 @@ class LLVMGenerator{
         reg++;
     }
 
+    //ETAP ||
+
+    static void compare_i32(String id1, String id2) {
+        main_text += "%"+reg+" = icmp eq i32 "+id1+", "+id2+"\n";
+        reg++;
+    }
+
+    static void compare_double(String id1, String id2) {
+        main_text += "%"+reg+" = fcmp oeq double "+id1+", "+id2+"\n";
+        reg++;
+    }
+
+    static void static_jump() {
+        main_text += "br label %"+reg+"\n";
+    }
+
+    static String conditional_jump(){
+        String line = "br i1 %"+(reg-1)+", label %"+reg+", label\n";
+        main_text += line;
+        return line;
+    }
+
+    static void conditional_jump_finish(String line) {
+       main_text = main_text.replaceAll(line,line + " %"+reg);
+    }
+
+    static void label(String preds) {
+        main_text += "\n; <label>:"+reg+":                                     ; preds = " + preds + "\n";
+        reg++;
+    }
+
 
     static String generate(){
         String text = "";

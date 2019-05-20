@@ -18,6 +18,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitProg(VSCLLParser.ProgContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#if_block}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf_block(VSCLLParser.If_blockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#if_block}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf_block(VSCLLParser.If_blockContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#stat}.
 	 * @param ctx the parse tree
 	 */
@@ -27,6 +37,52 @@ public interface VSCLLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStat(VSCLLParser.StatContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#if_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf_statement(VSCLLParser.If_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#if_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf_statement(VSCLLParser.If_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code condition_less_than}
+	 * labeled alternative in {@link VSCLLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCondition_less_than(VSCLLParser.Condition_less_thanContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code condition_less_than}
+	 * labeled alternative in {@link VSCLLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCondition_less_than(VSCLLParser.Condition_less_thanContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code condition_greater_than}
+	 * labeled alternative in {@link VSCLLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCondition_greater_than(VSCLLParser.Condition_greater_thanContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code condition_greater_than}
+	 * labeled alternative in {@link VSCLLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCondition_greater_than(VSCLLParser.Condition_greater_thanContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code condition_equal}
+	 * labeled alternative in {@link VSCLLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCondition_equal(VSCLLParser.Condition_equalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code condition_equal}
+	 * labeled alternative in {@link VSCLLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCondition_equal(VSCLLParser.Condition_equalContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code add}
 	 * labeled alternative in {@link VSCLLParser#expression}.
