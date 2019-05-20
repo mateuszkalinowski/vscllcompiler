@@ -1,5 +1,4 @@
-package pl.mateuszkalinowski.vscllcompiler;// Intro to ANTLR+LLVM
-// sawickib, 2014-04-26
+package pl.mateuszkalinowski.vscllcompiler;
 
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -12,10 +11,11 @@ import pl.mateuszkalinowski.vscllcompiler.llvm.LLVMActions;
 import pl.mateuszkalinowski.vscllcompiler.preprocessor.Preprocessor;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+
+
 
         if(args.length == 0 ) {
             System.out.println("Provide file to compile");

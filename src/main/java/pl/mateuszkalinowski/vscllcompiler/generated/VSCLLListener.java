@@ -40,65 +40,29 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitAdd(VSCLLParser.AddContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code expresion_id}
+	 * Enter a parse tree produced by the {@code expression_character}
 	 * labeled alternative in {@link VSCLLParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpresion_id(VSCLLParser.Expresion_idContext ctx);
+	void enterExpression_character(VSCLLParser.Expression_characterContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code expresion_id}
+	 * Exit a parse tree produced by the {@code expression_character}
 	 * labeled alternative in {@link VSCLLParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpresion_id(VSCLLParser.Expresion_idContext ctx);
+	void exitExpression_character(VSCLLParser.Expression_characterContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code expresion_to_double}
+	 * Enter a parse tree produced by the {@code expression_int}
 	 * labeled alternative in {@link VSCLLParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx);
+	void enterExpression_int(VSCLLParser.Expression_intContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code expresion_to_double}
+	 * Exit a parse tree produced by the {@code expression_int}
 	 * labeled alternative in {@link VSCLLParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code expresion_to_int}
-	 * labeled alternative in {@link VSCLLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code expresion_to_int}
-	 * labeled alternative in {@link VSCLLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code expresion_double}
-	 * labeled alternative in {@link VSCLLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpresion_double(VSCLLParser.Expresion_doubleContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code expresion_double}
-	 * labeled alternative in {@link VSCLLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpresion_double(VSCLLParser.Expresion_doubleContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code expresion_int}
-	 * labeled alternative in {@link VSCLLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpresion_int(VSCLLParser.Expresion_intContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code expresion_int}
-	 * labeled alternative in {@link VSCLLParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpresion_int(VSCLLParser.Expresion_intContext ctx);
+	void exitExpression_int(VSCLLParser.Expression_intContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code subtract}
 	 * labeled alternative in {@link VSCLLParser#expression}.
@@ -112,6 +76,18 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitSubtract(VSCLLParser.SubtractContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code expression_to_double}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression_to_double(VSCLLParser.Expression_to_doubleContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expression_to_double}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression_to_double(VSCLLParser.Expression_to_doubleContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code divide}
 	 * labeled alternative in {@link VSCLLParser#expression}.
 	 * @param ctx the parse tree
@@ -124,6 +100,18 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitDivide(VSCLLParser.DivideContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code expression_to_int}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression_to_int(VSCLLParser.Expression_to_intContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expression_to_int}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression_to_int(VSCLLParser.Expression_to_intContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code expression_index}
 	 * labeled alternative in {@link VSCLLParser#expression}.
 	 * @param ctx the parse tree
@@ -135,6 +123,30 @@ public interface VSCLLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpression_index(VSCLLParser.Expression_indexContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code expression_id}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression_id(VSCLLParser.Expression_idContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expression_id}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression_id(VSCLLParser.Expression_idContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code expression_double}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression_double(VSCLLParser.Expression_doubleContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expression_double}
+	 * labeled alternative in {@link VSCLLParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression_double(VSCLLParser.Expression_doubleContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code multiplicate}
 	 * labeled alternative in {@link VSCLLParser#expression}.
@@ -160,17 +172,41 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitPrint_expression(VSCLLParser.Print_expressionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code print_string}
-	 * labeled alternative in {@link VSCLLParser#print}.
+	 * Enter a parse tree produced by the {@code prints_string}
+	 * labeled alternative in {@link VSCLLParser#prints}.
 	 * @param ctx the parse tree
 	 */
-	void enterPrint_string(VSCLLParser.Print_stringContext ctx);
+	void enterPrints_string(VSCLLParser.Prints_stringContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code print_string}
-	 * labeled alternative in {@link VSCLLParser#print}.
+	 * Exit a parse tree produced by the {@code prints_string}
+	 * labeled alternative in {@link VSCLLParser#prints}.
 	 * @param ctx the parse tree
 	 */
-	void exitPrint_string(VSCLLParser.Print_stringContext ctx);
+	void exitPrints_string(VSCLLParser.Prints_stringContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code prints_id}
+	 * labeled alternative in {@link VSCLLParser#prints}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrints_id(VSCLLParser.Prints_idContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code prints_id}
+	 * labeled alternative in {@link VSCLLParser#prints}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrints_id(VSCLLParser.Prints_idContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code prints_id_index}
+	 * labeled alternative in {@link VSCLLParser#prints}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrints_id_index(VSCLLParser.Prints_id_indexContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code prints_id_index}
+	 * labeled alternative in {@link VSCLLParser#prints}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrints_id_index(VSCLLParser.Prints_id_indexContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code scani_id}
 	 * labeled alternative in {@link VSCLLParser#scani}.

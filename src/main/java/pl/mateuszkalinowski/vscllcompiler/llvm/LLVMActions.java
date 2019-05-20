@@ -35,7 +35,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitDeclaration_text_pointer(VSCLLParser.Declaration_text_pointerContext ctx) {
-        error(ctx.getStart().getLine(),"It must have provided size, or be initialized");
+        error(ctx.getStart().getLine(),"You must provide size, or initialize the variable");
     }
 
     @Override
@@ -55,6 +55,10 @@ public class LLVMActions extends VSCLLBaseListener {
         if (ctx.var().getText().equals("double")) {
             LLVMGenerator.declare_double_array(id, size);
             tables.put(id, new Table(size, VariableType.DOUBLE));
+        }
+        if (ctx.var().getText().equals("char")) {
+            LLVMGenerator.declare_char_array(id, size);
+            tables.put(id, new Table(size, VariableType.CHAR));
         }
     }
 
@@ -79,7 +83,7 @@ public class LLVMActions extends VSCLLBaseListener {
         String ID = ctx.ID().getText();
         Value v = stack.pop();
 
-        if (v.type == VariableType.INT) {
+        if (v.type == VariableType.INT || v.type == VariableType.CHAR) {
 
             if (isKnownVariable(v.name)) {
                 LLVMGenerator.load_i32(v.name);
@@ -103,27 +107,40 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx) {
-        LLVMGenerator.declare_text_pointer(ctx.ID().getText());
-        String text = ctx.STRING().getText();
-        text = text.substring(1, text.length() - 1);
-        LLVMGenerator.assign_text_pointer(ctx.ID().getText(), text);
-        variables.put(ctx.ID().getText(), VariableType.TEXT_POINTER);
+        if(variables.containsKey(ctx.ID().getText()) || tables.containsKey(ctx.ID().getText())) {
+            error(ctx.getStart().getLine(),String.format("Variable, '%s' already exists",ctx.ID().getText()));
+        }
+        else {
+            LLVMGenerator.declare_text_pointer(ctx.ID().getText());
+            String text = ctx.STRING().getText();
+            text = text.substring(1, text.length() - 1);
+            LLVMGenerator.assign_text_pointer(ctx.ID().getText(), text);
+            variables.put(ctx.ID().getText(), VariableType.TEXT_POINTER);
+        }
+
 
     }
 
+
+
     @Override
-    public void exitExpresion_id(VSCLLParser.Expresion_idContext ctx) {
+    public void exitExpression_id(VSCLLParser.Expression_idContext ctx) {
 
         if (variables.containsKey(ctx.getText())) {
             stack.push(new Value("%" + ctx.getText(), variables.get(ctx.getText())));
         } else {
-            error(ctx.getStart().getLine(), String.format("Variable '%s' doesn't exist", ctx.getText()));
+            if(tables.containsKey(ctx.getText())) {
+                error(ctx.getStart().getLine(),"Table in this context must have an index");
+            }
+            else {
+                error(ctx.getStart().getLine(), String.format("Variable '%s' doesn't exist", ctx.getText()));
+            }
         }
 
     }
 
     @Override
-    public void exitExpresion_double(VSCLLParser.Expresion_doubleContext ctx) {
+    public void exitExpression_double(VSCLLParser.Expression_doubleContext ctx) {
         String number = ctx.getText();
         if (number.startsWith("(") && number.endsWith(")"))
             number = number.substring(1, number.length() - 1);
@@ -131,7 +148,7 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
-    public void exitExpresion_int(VSCLLParser.Expresion_intContext ctx) {
+    public void exitExpression_int(VSCLLParser.Expression_intContext ctx) {
         String number = ctx.getText();
         if (number.startsWith("(") && number.endsWith(")"))
             number = number.substring(1, number.length() - 1);
@@ -139,7 +156,7 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
-    public void exitExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx) {
+    public void exitExpression_to_double(VSCLLParser.Expression_to_doubleContext ctx) {
         Value value = stack.pop();
         if (isKnownVariable(value.name)) {
             LLVMGenerator.load_i32(value.name);
@@ -151,7 +168,7 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
-    public void exitExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx) {
+    public void exitExpression_to_int(VSCLLParser.Expression_to_intContext ctx) {
         Value value = stack.pop();
         if (isKnownVariable(value.name)) {
             LLVMGenerator.load_double(value.name);
@@ -174,6 +191,10 @@ public class LLVMActions extends VSCLLBaseListener {
                 LLVMGenerator.load_i32_array(id, index, table.size);
                 stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
+            if(table.type.equals(VariableType.CHAR)) {
+                LLVMGenerator.load_i8_array(id,index,table.size);
+                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.CHAR));
+            }
             if (table.type.equals(VariableType.DOUBLE)) {
                 LLVMGenerator.load_double_array(id, index, table.size);
                 stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
@@ -184,12 +205,29 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     @Override
+    public void exitExpression_character(VSCLLParser.Expression_characterContext ctx) {
+        String text = ctx.CHARACTER().getText();
+        text = text.substring(1,text.length()-1);
+        if(text.length() == 1) {
+            char ch = text.charAt(0);
+            stack.push(new Value((int) ch +"",VariableType.CHAR));
+        }
+        else if (text.length() ==2 && text.charAt(0) == '\\') {
+            if(text.charAt(1) == '0') {
+                stack.push(new Value(0 +"",VariableType.CHAR));
+            }
+        }
+
+
+    }
+
+    @Override
     public void exitAdd(VSCLLParser.AddContext ctx) {
         Value v1 = stack.pop();
         Value v2 = stack.pop();
-        if (v1.type == v2.type) {
+        if (v1.type.equals(v2.type) || (v1.type.equals(VariableType.INT) && v2.type.equals(VariableType.CHAR)) || (v1.type.equals(VariableType.CHAR) && v2.type.equals(VariableType.INT))) {
 
-            if (v1.type == VariableType.INT) {
+            if (v1.type == VariableType.INT || v1.type == VariableType.CHAR) {
 
                 if (isKnownVariable(v1.name)) {
                     LLVMGenerator.load_i32(v1.name);
@@ -213,7 +251,7 @@ public class LLVMActions extends VSCLLBaseListener {
             }
 
 
-            if (v1.type == VariableType.INT) {
+            if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.add_i32(v1.name, v2.name);
                 stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
@@ -232,7 +270,7 @@ public class LLVMActions extends VSCLLBaseListener {
         Value v2 = stack.pop();
         if (v1.type == v2.type) {
 
-            if (v1.type == VariableType.INT) {
+            if (v1.type.equals(v2.type) || (v1.type.equals(VariableType.INT) && v2.type.equals(VariableType.CHAR)) || (v1.type.equals(VariableType.CHAR) && v2.type.equals(VariableType.INT))) {
 
                 if (isKnownVariable(v1.name)) {
                     LLVMGenerator.load_i32(v1.name);
@@ -256,7 +294,7 @@ public class LLVMActions extends VSCLLBaseListener {
             }
 
 
-            if (v1.type == VariableType.INT) {
+            if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.sub_i32(v2.name, v1.name);
                 stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
@@ -275,7 +313,7 @@ public class LLVMActions extends VSCLLBaseListener {
         Value v2 = stack.pop();
         if (v1.type == v2.type) {
 
-            if (v1.type == VariableType.INT) {
+            if (v1.type.equals(v2.type) || (v1.type.equals(VariableType.INT) && v2.type.equals(VariableType.CHAR)) || (v1.type.equals(VariableType.CHAR) && v2.type.equals(VariableType.INT))) {
 
                 if (isKnownVariable(v1.name)) {
                     LLVMGenerator.load_i32(v1.name);
@@ -298,7 +336,7 @@ public class LLVMActions extends VSCLLBaseListener {
                 }
             }
 
-            if (v1.type == VariableType.INT) {
+            if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.mult_i32(v1.name, v2.name);
                 stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
@@ -316,7 +354,7 @@ public class LLVMActions extends VSCLLBaseListener {
         String ID = ctx.ID().getText();
         Value v = stack.pop();
 
-        if (v.type == VariableType.INT) {
+        if (v.type == VariableType.INT || v.type == VariableType.CHAR) {
 
 
             if (isKnownVariable(v.name)) {
@@ -375,12 +413,15 @@ public class LLVMActions extends VSCLLBaseListener {
                 error(ctx.getStart().getLine(), String.format("Bad index '%s', array is only '%s' long", intIndex + "", intSize + ""));
             }
 
-            if (table.type.equals(value.type)) {
+            if (table.type.equals(value.type) || (table.type.equals(VariableType.CHAR) && value.type.equals(VariableType.INT))) {
                 if (table.type.equals(VariableType.INT)) {
                     LLVMGenerator.assign_i32_array(name, intIndex + "", value.name, table.size);
                 }
                 if (table.type.equals(VariableType.DOUBLE)) {
                     LLVMGenerator.assign_double_array(name, intIndex + "", value.name, table.size);
+                }
+                if(table.type.equals(VariableType.CHAR)) {
+                    LLVMGenerator.assign_char_array(name,intIndex+"",value.name,table.size);
                 }
             } else {
                 error(ctx.getStart().getLine(), "Assign type mismatch");
@@ -394,7 +435,7 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitPrint_expression(VSCLLParser.Print_expressionContext ctx) {
         Value currentValue = stack.pop();
-        if (currentValue.type.equals(VariableType.INT)) {
+        if (currentValue.type.equals(VariableType.INT) ) {
 
             if (variables.keySet().contains(currentValue.name.replaceFirst("%", ""))) {
                 LLVMGenerator.print_i32(currentValue.name);
@@ -410,13 +451,68 @@ public class LLVMActions extends VSCLLBaseListener {
                 LLVMGenerator.assign_double("tmpd", currentValue.name);
                 LLVMGenerator.print_double("%tmpd");
             }
+        } else if(currentValue.type.equals(VariableType.CHAR)){
+            if (variables.keySet().contains(currentValue.name.replaceFirst("%", ""))) {
+                LLVMGenerator.print_i8(currentValue.name);
+            } else {
+                LLVMGenerator.assign_i8("tmp8", currentValue.name);
+                LLVMGenerator.print_i8("%tmp8");
+            }
+
         } else if (currentValue.type.equals(VariableType.TEXT_POINTER)) {
             LLVMGenerator.print_text_pointer(currentValue.name);
         }
     }
 
     @Override
-    public void exitPrint_string(VSCLLParser.Print_stringContext ctx) {
+    public void exitPrints_id(VSCLLParser.Prints_idContext ctx) {
+        String id = ctx.ID().getText();
+        if(tables.containsKey(id)) {
+            LLVMGenerator.print_char_array(id,tables.get(id).size);
+        }
+        else {
+            error(ctx.getStart().getLine(),String.format("Array '%s' doesn't exist",id));
+        }
+    }
+
+    @Override
+    public void exitPrints_id_index(VSCLLParser.Prints_id_indexContext ctx) {
+        String id = ctx.ID().getText();
+        if(tables.containsKey(id)) {
+
+            Table table = tables.get(id);
+
+
+            String index = ctx.index().getText();
+
+            index = index.substring(1, index.length() - 1);
+
+            if (index.startsWith("(") && index.endsWith(")"))
+                index = index.substring(1, index.length() - 1);
+
+            int intIndex = Integer.valueOf(index);
+            int intSize = Integer.valueOf(table.size);
+
+
+            if (intIndex < 0) {
+                intIndex = intSize + intIndex;
+            }
+
+
+            if (intIndex >= intSize || intIndex < 0) {
+                error(ctx.getStart().getLine(), String.format("Bad index '%s', array is only '%s' long", intIndex + "", intSize + ""));
+            }
+
+            LLVMGenerator.print_i8_table_element(id,table.size,intIndex+"");
+
+        } else {
+            error(ctx.getStart().getLine(),String.format("Array '%s' doesn't exist",id));
+        }
+
+    }
+
+    @Override
+    public void exitPrints_string(VSCLLParser.Prints_stringContext ctx) {
         String text = ctx.STRING().getText();
         text = text.substring(1, text.length() - 1);
         LLVMGenerator.print_static_string(text);

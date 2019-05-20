@@ -52,61 +52,25 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpresion_id(VSCLLParser.Expresion_idContext ctx) { }
+	@Override public void enterExpression_character(VSCLLParser.Expression_characterContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpresion_id(VSCLLParser.Expresion_idContext ctx) { }
+	@Override public void exitExpression_character(VSCLLParser.Expression_characterContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx) { }
+	@Override public void enterExpression_int(VSCLLParser.Expression_intContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpresion_to_double(VSCLLParser.Expresion_to_doubleContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpresion_to_int(VSCLLParser.Expresion_to_intContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpresion_double(VSCLLParser.Expresion_doubleContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpresion_double(VSCLLParser.Expresion_doubleContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpresion_int(VSCLLParser.Expresion_intContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpresion_int(VSCLLParser.Expresion_intContext ctx) { }
+	@Override public void exitExpression_int(VSCLLParser.Expression_intContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -124,6 +88,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpression_to_double(VSCLLParser.Expression_to_doubleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression_to_double(VSCLLParser.Expression_to_doubleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDivide(VSCLLParser.DivideContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -136,6 +112,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpression_to_int(VSCLLParser.Expression_to_intContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression_to_int(VSCLLParser.Expression_to_intContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpression_index(VSCLLParser.Expression_indexContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -143,6 +131,30 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpression_index(VSCLLParser.Expression_indexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpression_id(VSCLLParser.Expression_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression_id(VSCLLParser.Expression_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpression_double(VSCLLParser.Expression_doubleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression_double(VSCLLParser.Expression_doubleContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -172,13 +184,37 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPrint_string(VSCLLParser.Print_stringContext ctx) { }
+	@Override public void enterPrints_string(VSCLLParser.Prints_stringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPrint_string(VSCLLParser.Print_stringContext ctx) { }
+	@Override public void exitPrints_string(VSCLLParser.Prints_stringContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrints_id(VSCLLParser.Prints_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrints_id(VSCLLParser.Prints_idContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPrints_id_index(VSCLLParser.Prints_id_indexContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPrints_id_index(VSCLLParser.Prints_id_indexContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

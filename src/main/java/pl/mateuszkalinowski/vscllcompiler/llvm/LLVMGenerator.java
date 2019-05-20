@@ -2,10 +2,28 @@ package pl.mateuszkalinowski.vscllcompiler.llvm;
 
 class LLVMGenerator{
 
-    static String header_text = "";
-    static String main_text = "";
+    private static String header_text = "";
+    private static String main_text = "";
     static int reg = 1;
-    static int str_i = 3;
+    private static int str_i = 5;
+
+    static void print_i8_table_element(String id, String size, String index) {
+        main_text += " %"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* %"+id+", i64 0, i64 "+index+"\n";
+        reg++;
+        main_text += "%"+reg+" = load i8, i8* %"+(reg-1)+", align 1\n";
+        reg++;
+        main_text += "%"+reg+" = sext i8 %"+(reg-1)+" to i32\n";
+        reg++;
+        main_text += "%"+reg+ " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 %"+(reg-1)+")\n";
+        reg++;
+    }
+
+    static void print_i8(String id){
+        main_text += "%"+reg+" = load i8, i8* "+id+"\n";
+        reg++;
+        main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i8 %"+(reg-1)+")\n";
+        reg++;
+    }
 
     static void print_i32(String id){
         main_text += "%"+reg+" = load i32, i32* "+id+"\n";
@@ -34,6 +52,13 @@ class LLVMGenerator{
         header_text += "@.str."+str_i+" = constant"+str_type+" c\""+text+"\\0A\\00\"\n";
         main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( "+str_type+", "+str_type+"* @.str."+str_i+", i32 0, i32 0))\n";
         str_i++;
+        reg++;
+    }
+
+    static void print_char_array(String id, String size) {
+        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* %"+id+", i32 0, i32 0\n";
+        reg++;
+        main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.3, i32 0, i32 0), i8* %"+(reg-1)+")\n";
         reg++;
     }
 
@@ -82,6 +107,14 @@ class LLVMGenerator{
         main_text += "%"+id+" = alloca ["+ size +" x double], align 16\n";
     }
 
+    static void declare_char_array(String id, String size) {
+        main_text += "%"+id+" = alloca ["+size+" x i8], align 1\n";
+    }
+
+    static void assign_i8(String id, String value){
+        main_text += "store i8 "+value+", i8* %"+id+"\n";
+    }
+
     static void assign_i32(String id, String value){
         main_text += "store i32 "+value+", i32* %"+id+"\n";
     }
@@ -110,6 +143,12 @@ class LLVMGenerator{
         main_text += "store double "+value+", double* %"+(reg-1)+", align 8\n";
     }
 
+    static void assign_char_array(String id, String index, String value, String size) {
+        main_text += "%"+reg +" = getelementptr inbounds ["+size+" x i8], ["+ size +" x i8]* %"+id+", i64 0, i64 "+index+"\n";
+        reg++;
+        main_text += "store i8 "+value+", i8* %"+(reg-1)+", align 1\n";
+    }
+
     static void load_i32(String id){
         main_text += "%"+reg+" = load i32, i32* "+id+"\n";
         reg++;
@@ -117,6 +156,13 @@ class LLVMGenerator{
 
     static void load_double(String id){
         main_text += "%"+reg+" = load double, double* "+id+"\n";
+        reg++;
+    }
+
+    static void load_i8_array(String id, String index, String size) {
+        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* %"+id+", i64 0, i64 "+index+"\n";
+        reg++;
+        main_text += "%"+reg+" = load i8, i8* %"+(reg-1)+", align 1\n";
         reg++;
     }
 
@@ -184,8 +230,11 @@ class LLVMGenerator{
         text += "@.str = constant [3 x i8] c\"%d\\00\"\n";
         text += "@.str.1 = constant [4 x i8] c\"%lf\\00\"\n";
         text += "@.str.2 = constant [3 x i8] c\"%s\\00\"\n";
+        text += "@.str.3 = constant [4 x i8] c\"%s\\0A\\00\"\n";
+        text += "@.str.4 = constant [4 x i8] c\"%c\\0A\\00\", align 1";
         text += header_text;
         text += "define i32 @main() nounwind{\n";
+        text += "%tmp8 = alloca i8\n";
         text += "%tmpi = alloca i32\n";
         text += "%tmpd = alloca double\n";
         text += main_text;
