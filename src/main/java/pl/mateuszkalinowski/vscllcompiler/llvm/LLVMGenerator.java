@@ -18,6 +18,13 @@ class LLVMGenerator{
         reg++;
     }
 
+    static void print_i8_as_char(String id) {
+        load_i8(id);
+        i8toi32("%" + (reg-1));
+        main_text += "%"+reg+ " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 %"+(reg-1)+")\n";
+        reg++;
+    }
+
     static void print_i8(String id){
         main_text += "%"+reg+" = load i8, i8* "+id+"\n";
         reg++;
@@ -29,6 +36,12 @@ class LLVMGenerator{
         main_text += "%"+reg+" = load i32, i32* "+id+"\n";
         reg++;
         main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i32 %"+(reg-1)+")\n";
+        reg++;
+    }
+
+    static void print_i32_as_char(String id) {
+        load_i32(id);
+        main_text += "%"+reg+ " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 %"+(reg-1)+")\n";
         reg++;
     }
 
@@ -228,7 +241,7 @@ class LLVMGenerator{
     }
 
     static void i8toi32(String id) {
-        main_text += "%"+reg+" = sext i8 "+id+" to i32";
+        main_text += "%"+reg+" = sext i8 "+id+" to i32\n";
         reg++;
     }
 
