@@ -620,8 +620,8 @@ public class LLVMActions extends VSCLLBaseListener {
                 LLVMGenerator.print_i8("%tmp8");
             }
 
-        } else if (currentValue.type.equals(VariableType.TEXT_POINTER)) {
-            LLVMGenerator.print_text_pointer(currentValue.name);
+        } else {
+            error(ctx.getStart().getLine(), "Unsupported value type");
         }
     }
 
@@ -637,6 +637,8 @@ public class LLVMActions extends VSCLLBaseListener {
             }
             else if(variableType.equals(VariableType.INT)) {
                 LLVMGenerator.print_i32_as_char("%" + id);
+            } else if(variableType.equals(VariableType.TEXT_POINTER)) {
+                LLVMGenerator.print_text_pointer("%"+id);
             }
             else
                 error(ctx.getStart().getLine(), "Can only display int or char");
