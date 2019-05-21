@@ -86,7 +86,9 @@ class LLVMGenerator{
         reg++;
     }
 
-
+    static void declare_i8(String id) {
+        main_text += "%"+id +" = alloca i8, align 1\n";
+    }
     static void declare_i32(String id){
         main_text += "%"+id+" = alloca i32\n";
     }
@@ -147,6 +149,11 @@ class LLVMGenerator{
         main_text += "%"+reg +" = getelementptr inbounds ["+size+" x i8], ["+ size +" x i8]* %"+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "store i8 "+value+", i8* %"+(reg-1)+", align 1\n";
+    }
+
+    static void load_i8(String id) {
+        main_text += "%"+reg+" =  load i8, i8* "+id+", align 1\n";
+        reg++;
     }
 
     static void load_i32(String id){
@@ -217,6 +224,11 @@ class LLVMGenerator{
 
     static void fptosi(String id){
         main_text += "%"+reg+" = fptosi double "+id+" to i32\n";
+        reg++;
+    }
+
+    static void i8toi32(String id) {
+        main_text += "%"+reg+" = sext i8 "+id+" to i32";
         reg++;
     }
 

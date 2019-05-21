@@ -41,6 +41,10 @@ public class LLVMActions extends VSCLLBaseListener {
             LLVMGenerator.declare_double(ctx.ID().getText());
             LLVMGenerator.assign_double(ctx.ID().getText(), "0.0");
             variables.put(ctx.ID().getText(), VariableType.DOUBLE);
+        } else if (ctx.var().getText().equals("char")) {
+            LLVMGenerator.declare_i8(ctx.ID().getText());
+            LLVMGenerator.assign_i8(ctx.ID().getText(),"0");
+            variables.put(ctx.ID().getText(),VariableType.CHAR);
         }
     }
 
@@ -236,31 +240,65 @@ public class LLVMActions extends VSCLLBaseListener {
     public void exitAdd(VSCLLParser.AddContext ctx) {
         Value v1 = stack.pop();
         Value v2 = stack.pop();
-        if (v1.type.equals(v2.type) || (v1.type.equals(VariableType.INT) && v2.type.equals(VariableType.CHAR)) || (v1.type.equals(VariableType.CHAR) && v2.type.equals(VariableType.INT))) {
-
-            if (v1.type == VariableType.INT || v1.type == VariableType.CHAR) {
-
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_i32(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_i32(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
-            } else if (v1.type == VariableType.DOUBLE) {
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_double(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_double(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
+        if(v1.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
             }
+            else if( v1.name.startsWith("%")) {
+                //LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
+            }
+            else {
+                v1.type = VariableType.INT;
+            }
+        } else if(v1.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i32(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v1.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_double(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
 
+
+        if(v2.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else if( v2.name.startsWith("%")) {
+             //   LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else {
+                v2.type = VariableType.INT;
+            }
+        } else if(v2.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i32(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v2.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_double(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
+
+
+        if (v1.type.equals(v2.type)) {
 
             if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.add_i32(v1.name, v2.name);
@@ -279,31 +317,65 @@ public class LLVMActions extends VSCLLBaseListener {
     public void exitSubtract(VSCLLParser.SubtractContext ctx) {
         Value v1 = stack.pop();
         Value v2 = stack.pop();
-        if (v1.type == v2.type) {
 
-            if (v1.type.equals(v2.type) || (v1.type.equals(VariableType.INT) && v2.type.equals(VariableType.CHAR)) || (v1.type.equals(VariableType.CHAR) && v2.type.equals(VariableType.INT))) {
-
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_i32(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_i32(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
-            } else if (v1.type == VariableType.DOUBLE) {
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_double(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_double(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
+        if(v1.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
             }
+            else if( v1.name.startsWith("%")) {
+                //LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
+            }
+            else {
+                v1.type = VariableType.INT;
+            }
+        } else if(v1.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i32(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v1.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_double(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
 
+
+        if(v2.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else if( v2.name.startsWith("%")) {
+                //   LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else {
+                v2.type = VariableType.INT;
+            }
+        } else if(v2.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i32(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v2.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_double(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
+
+        if (v1.type == v2.type) {
 
             if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.sub_i32(v2.name, v1.name);
@@ -322,30 +394,65 @@ public class LLVMActions extends VSCLLBaseListener {
     public void exitMultiplicate(VSCLLParser.MultiplicateContext ctx) {
         Value v1 = stack.pop();
         Value v2 = stack.pop();
-        if (v1.type == v2.type) {
 
-            if (v1.type.equals(v2.type) || (v1.type.equals(VariableType.INT) && v2.type.equals(VariableType.CHAR)) || (v1.type.equals(VariableType.CHAR) && v2.type.equals(VariableType.INT))) {
-
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_i32(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_i32(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
-            } else if (v1.type == VariableType.DOUBLE) {
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_double(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_double(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
+        if(v1.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
             }
+            else if( v1.name.startsWith("%")) {
+                //LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
+            }
+            else {
+                v1.type = VariableType.INT;
+            }
+        } else if(v1.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i32(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v1.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_double(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
+
+
+        if(v2.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else if( v2.name.startsWith("%")) {
+                //   LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else {
+                v2.type = VariableType.INT;
+            }
+        } else if(v2.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i32(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v2.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_double(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
+
+        if (v1.type == v2.type) {
 
             if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.mult_i32(v1.name, v2.name);
@@ -621,31 +728,65 @@ public class LLVMActions extends VSCLLBaseListener {
     public void exitCondition_equal(VSCLLParser.Condition_equalContext ctx) {
         Value v1 = stack.pop();
         Value v2 = stack.pop();
-        if (v1.type.equals(v2.type)) {
 
-            if (v1.type == VariableType.INT || v1.type == VariableType.CHAR) {
-
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_i32(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_i32(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
-            } else if (v1.type == VariableType.DOUBLE) {
-                if (isKnownVariable(v1.name)) {
-                    LLVMGenerator.load_double(v1.name);
-                    v1.name = "%" + (LLVMGenerator.reg - 1);
-                }
-
-                if (isKnownVariable(v2.name)) {
-                    LLVMGenerator.load_double(v2.name);
-                    v2.name = "%" + (LLVMGenerator.reg - 1);
-                }
+        if(v1.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
             }
+            else if( v1.name.startsWith("%")) {
+                //LLVMGenerator.load_i8(v1.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v1.name = "%" + (LLVMGenerator.reg-1);
+                v1.type = VariableType.INT;
+            }
+            else {
+                v1.type = VariableType.INT;
+            }
+        } else if(v1.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i32(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v1.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_double(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
 
+
+        if(v2.type.equals(VariableType.CHAR)) {
+            if( isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else if( v2.name.startsWith("%")) {
+                //   LLVMGenerator.load_i8(v2.name);
+                LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg-1));
+                v2.name = "%" + (LLVMGenerator.reg-1);
+                v2.type = VariableType.INT;
+            }
+            else {
+                v2.type = VariableType.INT;
+            }
+        } else if(v2.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i32(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if(v2.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_double(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
+
+        if (v1.type.equals(v2.type)) {
 
             if (v1.type == VariableType.INT) {
                 LLVMGenerator.compare_i32(v1.name,v2.name);
