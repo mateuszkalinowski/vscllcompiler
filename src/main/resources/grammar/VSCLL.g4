@@ -6,6 +6,9 @@ prog: ( stat? NEWLINE )*
 if_block: (stat? NEWLINE)*
     ;
 
+while_block: (stat? NEWLINE)*
+    ;
+
 stat:           print SC
           |     prints SC
           |     scani SC
@@ -14,9 +17,13 @@ stat:           print SC
           |     declaration_with_initialization SC
           |     assign SC
           |     if_statement
+          |     while_statement
    ;
 
 if_statement: 'if' '('condition')' '{' if_block '}'
+    ;
+
+while_statement: 'while' '(' condition ')' '{' while_block '}'
     ;
 
 condition:      expression '<'  expression         #condition_less_than

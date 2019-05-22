@@ -14,11 +14,12 @@ import java.util.Stack;
 public class LLVMActions extends VSCLLBaseListener {
 
     private Stack<Value> stack = new Stack<>();
-    private Stack<String> blocksStack = new Stack<>();
-    private Stack<String> conditionalJumpsStack = new Stack<>();
+    private Stack<String> labels = new Stack<>();
 
     private HashMap<String, VariableType> variables = new HashMap<>();
     private HashMap<String, Table> tables = new HashMap<>();
+
+    int labelCounter = 0;
 
 
     /*
@@ -888,26 +889,54 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void enterIf_block(VSCLLParser.If_blockContext ctx) {
-        String value = blocksStack.pop();
-        String preds = value;
-        String toAdd = LLVMGenerator.conditional_jump();
-        conditionalJumpsStack.push(toAdd.substring(0, toAdd.length() - 1));
-        LLVMGenerator.label(preds);
-        blocksStack.push(value);
-        blocksStack.push("%" + (LLVMGenerator.reg - 1));
+
+        String labelStart = "L" + labelCounter;
+        labelCounter++;
+        String labelEnd = "L" + labelCounter;
+        labelCounter++;
+
+        LLVMGenerator.conditional_jump(labelStart,labelEnd);
+        LLVMGenerator.label(labelStart);
+        labels.push(labelEnd);
     }
 
     @Override
     public void exitIf_block(VSCLLParser.If_blockContext ctx) {
-        String value = blocksStack.pop();
-        String value2 = blocksStack.pop();
-        String preds = value + "," + value2;
-        LLVMGenerator.conditional_jump_finish(conditionalJumpsStack.pop());
-        LLVMGenerator.static_jump();
-        LLVMGenerator.label(preds);
-        blocksStack.push(value);
-        blocksStack.push("%" + (LLVMGenerator.reg - 1));
+        String label = labels.pop();
+        LLVMGenerator.static_jump(label);
+        LLVMGenerator.label(label);
     }
+
+    @Override
+    public void enterWhile_statement(VSCLLParser.While_statementContext ctx) {
+        String label = "L" + labelCounter;
+        labelCounter++;
+        labels.push(label);
+        LLVMGenerator.static_jump(label);
+        LLVMGenerator.label(label);
+    }
+
+    @Override
+    public void enterWhile_block(VSCLLParser.While_blockContext ctx) {
+        String labelStart = "L" + labelCounter;
+        labelCounter++;
+        String labelEnd = "L" + labelCounter;
+        labelCounter++;
+
+        LLVMGenerator.conditional_jump(labelStart,labelEnd);
+        LLVMGenerator.label(labelStart);
+        labels.push(labelEnd);
+    }
+
+    @Override
+    public void exitWhile_block(VSCLLParser.While_blockContext ctx) {
+        String end = labels.pop();
+        String back = labels.pop();
+
+        LLVMGenerator.static_jump(back);
+        LLVMGenerator.label(end);
+    }
+
 
     /*
 
@@ -918,7 +947,6 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void enterProg(VSCLLParser.ProgContext ctx) {
-        blocksStack.push("%0");
     }
 
     @Override

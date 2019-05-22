@@ -40,6 +40,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWhile_block(VSCLLParser.While_blockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhile_block(VSCLLParser.While_blockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStat(VSCLLParser.StatContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -59,6 +71,18 @@ public class VSCLLBaseListener implements VSCLLListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIf_statement(VSCLLParser.If_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWhile_statement(VSCLLParser.While_statementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhile_statement(VSCLLParser.While_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

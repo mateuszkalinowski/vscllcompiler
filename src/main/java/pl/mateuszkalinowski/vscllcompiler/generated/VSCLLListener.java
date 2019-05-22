@@ -28,6 +28,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitIf_block(VSCLLParser.If_blockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#while_block}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhile_block(VSCLLParser.While_blockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#while_block}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhile_block(VSCLLParser.While_blockContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#stat}.
 	 * @param ctx the parse tree
 	 */
@@ -47,6 +57,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIf_statement(VSCLLParser.If_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#while_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhile_statement(VSCLLParser.While_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#while_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhile_statement(VSCLLParser.While_statementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code condition_less_than}
 	 * labeled alternative in {@link VSCLLParser#condition}.

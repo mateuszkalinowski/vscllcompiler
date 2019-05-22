@@ -1,6 +1,7 @@
-int x = 2;
-int y = 3;
-if( x < y) {
-prints("tak");
+int x = 0;
+int y = 5;
+while(x<y) {
+print(x);
+x = x + 1;
 }
-prints("nie");
+prints("koniec");

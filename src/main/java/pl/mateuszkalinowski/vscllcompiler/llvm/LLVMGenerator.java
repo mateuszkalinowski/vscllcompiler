@@ -277,25 +277,22 @@ class LLVMGenerator{
         reg++;
     }
 
-    static void static_jump() {
-        main_text += "br label %"+reg+"\n";
+    static void static_jump(String label) {
+        main_text += "br label %"+label+"\n";
     }
 
-    static String conditional_jump(){
-        String line = "br i1 %"+(reg-1)+", label %"+reg+", label\n";
+    static void conditional_jump(String label1, String label2) {
+        String line = "br i1 %"+(reg-1)+", label %"+label1+", label %"+label2+"\n";
         main_text += line;
-        return line;
+    }
+
+    static void label(String label) {
+        main_text += label + ":\n";
     }
 
     static void conditional_jump_finish(String line) {
        main_text = main_text.replaceAll(line,line + " %"+reg);
     }
-
-    static void label(String preds) {
-        main_text += "\n; <label>:"+reg+":                                     ; preds = " + preds + "\n";
-        reg++;
-    }
-
 
     static String generate(){
         String text = "";
