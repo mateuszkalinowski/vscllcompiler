@@ -247,13 +247,33 @@ class LLVMGenerator{
 
     //ETAP ||
 
-    static void compare_i32(String id1, String id2) {
+    static void compare_equal_i32(String id1, String id2) {
         main_text += "%"+reg+" = icmp eq i32 "+id1+", "+id2+"\n";
         reg++;
     }
 
-    static void compare_double(String id1, String id2) {
+    static void compare_less_than_i32(String id1, String id2) {
+        main_text += "%"+reg+" = icmp slt i32 "+id1+", "+id2+"\n";
+        reg++;
+    }
+
+    static void compare_greater_than_i32(String id1, String id2) {
+        main_text += "%"+reg+" = icmp sgt i32 "+id1+", "+id2+"\n";
+        reg++;
+    }
+
+    static void compare_equal_double(String id1, String id2) {
         main_text += "%"+reg+" = fcmp oeq double "+id1+", "+id2+"\n";
+        reg++;
+    }
+
+    static void compare_less_than_double(String id1, String id2) {
+        main_text += "%"+reg+" = fcmp olt double "+id1+", "+id2+"\n";
+        reg++;
+    }
+
+    static void compare_greater_than_double(String id1, String id2) {
+        main_text += "%"+reg+" = fcmp ogt double "+id1+", "+id2+"\n";
         reg++;
     }
 

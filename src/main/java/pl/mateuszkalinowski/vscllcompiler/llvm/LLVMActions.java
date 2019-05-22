@@ -2,6 +2,7 @@ package pl.mateuszkalinowski.vscllcompiler.llvm;
 
 import pl.mateuszkalinowski.vscllcompiler.entities.Table;
 import pl.mateuszkalinowski.vscllcompiler.entities.Value;
+import pl.mateuszkalinowski.vscllcompiler.enums.ComparisonType;
 import pl.mateuszkalinowski.vscllcompiler.enums.VariableType;
 import pl.mateuszkalinowski.vscllcompiler.generated.VSCLLBaseListener;
 import pl.mateuszkalinowski.vscllcompiler.generated.VSCLLParser;
@@ -779,10 +780,25 @@ public class LLVMActions extends VSCLLBaseListener {
 
      */
 
+
     @Override
     public void exitCondition_equal(VSCLLParser.Condition_equalContext ctx) {
-        Value v1 = stack.pop();
+        exitCondition(ctx.getStart().getLine(),ComparisonType.EQUAL);
+    }
+
+    @Override
+    public void exitCondition_less_than(VSCLLParser.Condition_less_thanContext ctx) {
+        exitCondition(ctx.getStart().getLine(),ComparisonType.LESS_THAN);
+    }
+
+    @Override
+    public void exitCondition_greater_than(VSCLLParser.Condition_greater_thanContext ctx) {
+        exitCondition(ctx.getStart().getLine(),ComparisonType.GREATER_THAN);
+    }
+
+    public void exitCondition(int lineNumber, ComparisonType comparisonType) {
         Value v2 = stack.pop();
+        Value v1 = stack.pop();
 
         if (v1.type.equals(VariableType.CHAR)) {
             if (isKnownVariable(v1.name)) {
@@ -840,17 +856,35 @@ public class LLVMActions extends VSCLLBaseListener {
         if (v1.type.equals(v2.type)) {
 
             if (v1.type == VariableType.INT) {
-                LLVMGenerator.compare_i32(v1.name, v2.name);
+                if(comparisonType.equals(ComparisonType.EQUAL)) {
+                    LLVMGenerator.compare_equal_i32(v1.name, v2.name);
+                }
+                else if(comparisonType.equals(ComparisonType.LESS_THAN)) {
+                    LLVMGenerator.compare_less_than_i32(v1.name, v2.name);
+                }
+                else if(comparisonType.equals(ComparisonType.GREATER_THAN)) {
+                    LLVMGenerator.compare_greater_than_i32(v1.name, v2.name);
+                }
                 stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
             }
             if (v1.type == VariableType.DOUBLE) {
-                LLVMGenerator.compare_double(v1.name, v2.name);
+                if(comparisonType.equals(ComparisonType.EQUAL)) {
+                    LLVMGenerator.compare_equal_double(v1.name, v2.name);
+                }
+                else if(comparisonType.equals(ComparisonType.LESS_THAN)) {
+                    LLVMGenerator.compare_less_than_double(v1.name, v2.name);
+                }
+                else if(comparisonType.equals(ComparisonType.GREATER_THAN)) {
+                    LLVMGenerator.compare_greater_than_double(v1.name, v2.name);
+                }
                 stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
             }
         } else {
-            error(ctx.getStart().getLine(), "comparison type mismatch");
+            error(lineNumber, "comparison type mismatch");
         }
     }
+
+
 
     @Override
     public void enterIf_block(VSCLLParser.If_blockContext ctx) {

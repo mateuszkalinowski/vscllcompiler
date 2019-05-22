@@ -1,18 +1,6 @@
-int x;
-int y;
-scani(x);
-scani(y);
-int c = x + y;
-print(c);
-c = x - y;
-print(c);
-double d1 = 2.2;
-double d2 = 4.4;
-print(d1*d2);
-int tab[10];
-tab[0] = 2;
-tab[1] = 3;
-print(tab[0]*tab[1]);
-char tekst[] = "Ala ma kota";
-prints(tekst);
-print(tekst);
+int x = 2;
+int y = 3;
+if( x < y) {
+prints("tak");
+}
+prints("nie");
