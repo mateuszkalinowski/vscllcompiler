@@ -607,28 +607,23 @@ public class LLVMActions extends VSCLLBaseListener {
         StackValue currentValue = stack.pop();
         if (currentValue.type.equals(VariableType.INT)) {
 
-
-
             if (isKnownVariable(currentValue.name)) {
-                LLVMGenerator.print_i32(currentValue.name);
+                LLVMGenerator.print_i32(currentValue.name,true);
             } else {
-                LLVMGenerator.assign_i32("tmpi", currentValue.name);
-                LLVMGenerator.print_i32("%tmpi");
+                LLVMGenerator.print_i32(currentValue.name,false);
             }
         } else if (currentValue.type.equals(VariableType.DOUBLE)) {
 
             if (isKnownVariable(currentValue.name)) {
-                LLVMGenerator.print_double(currentValue.name);
+                LLVMGenerator.print_double(currentValue.name, true);
             } else {
-                LLVMGenerator.assign_double("tmpd", currentValue.name);
-                LLVMGenerator.print_double("%tmpd");
+                LLVMGenerator.print_double(currentValue.name, false);
             }
         } else if (currentValue.type.equals(VariableType.CHAR)) {
             if (isKnownVariable(currentValue.name)) {
-                LLVMGenerator.print_i8(currentValue.name);
+                LLVMGenerator.print_i8(currentValue.name, true);
             } else {
-                LLVMGenerator.assign_i8("tmp8", currentValue.name);
-                LLVMGenerator.print_i8("%tmp8");
+                LLVMGenerator.print_i8(currentValue.name, false);
             }
 
         } else {
@@ -644,10 +639,10 @@ public class LLVMActions extends VSCLLBaseListener {
         } else if (variables.containsKey(id)) {
             VariableType variableType = variables.get(id).variableType;
             if(variableType.equals(VariableType.CHAR)) {
-                LLVMGenerator.print_i8_as_char(variables.get(id).address);
+                LLVMGenerator.print_i8_as_char(variables.get(id).address,true);
             }
             else if(variableType.equals(VariableType.INT)) {
-                LLVMGenerator.print_i32_as_char(variables.get(id).address);
+                LLVMGenerator.print_i32_as_char(variables.get(id).address, true);
             }
             else if(variableType.equals(VariableType.TEXT_POINTER)) {
                 LLVMGenerator.print_text_pointer(variables.get(id).address);
