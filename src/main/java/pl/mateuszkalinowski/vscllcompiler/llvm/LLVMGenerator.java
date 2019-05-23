@@ -99,31 +99,37 @@ class LLVMGenerator{
         reg++;
     }
 
-    static void declare_i8(String id) {
-        main_text += "%"+id +" = alloca i8, align 1\n";
+    static void declare_i8_local() {
+        main_text += "%"+reg +" = alloca i8, align 1\n";
+        reg++;
     }
-    static void declare_i32(String id){
-        main_text += "%"+id+" = alloca i32\n";
+    static void declare_i32_local(){
+        main_text += "%"+reg+" = alloca i32\n";
+        reg++;
     }
 
-    static void declare_double(String id){
-        main_text += "%"+id+" = alloca double\n";
+    static void declare_double_local(){
+        main_text += "%"+reg+" = alloca double\n";
+        reg++;
     }
 
     static void declare_text_pointer(String id) {
         main_text += "%"+id+" = alloca i8*, align 8\n";
     }
 
-    static void declare_i32_array(String id, String size) {
-        main_text += "%"+id+" = alloca ["+ size +" x i32], align 16\n";
+    static void declare_i32_array_local(String size) {
+        main_text += "%"+reg+" = alloca ["+ size +" x i32], align 16\n";
+        reg++;
     }
 
-    static void declare_double_array(String id, String size) {
-        main_text += "%"+id+" = alloca ["+ size +" x double], align 16\n";
+    static void declare_double_array_local(String size) {
+        main_text += "%"+reg+" = alloca ["+ size +" x double], align 16\n";
+        reg++;
     }
 
-    static void declare_char_array(String id, String size) {
-        main_text += "%"+id+" = alloca ["+size+" x i8], align 1\n";
+    static void declare_char_array_local(String size) {
+        main_text += "%"+reg+" = alloca ["+size+" x i8], align 1\n";
+        reg++;
     }
 
     static void assign_i8(String id, String value){

@@ -1,7 +1,8 @@
 package pl.mateuszkalinowski.vscllcompiler.llvm;
 
 import pl.mateuszkalinowski.vscllcompiler.entities.Table;
-import pl.mateuszkalinowski.vscllcompiler.entities.Value;
+import pl.mateuszkalinowski.vscllcompiler.entities.StackValue;
+import pl.mateuszkalinowski.vscllcompiler.entities.VariableInfo;
 import pl.mateuszkalinowski.vscllcompiler.enums.ComparisonType;
 import pl.mateuszkalinowski.vscllcompiler.enums.VariableType;
 import pl.mateuszkalinowski.vscllcompiler.generated.VSCLLBaseListener;
@@ -13,19 +14,22 @@ import java.util.Stack;
 
 public class LLVMActions extends VSCLLBaseListener {
 
-    private Stack<Value> stack = new Stack<>();
+    private Stack<StackValue> stack = new Stack<>();
     private Stack<String> labels = new Stack<>();
 
-    private HashMap<String, VariableType> variables = new HashMap<>();
+    private HashMap<String, VariableInfo> variables = new HashMap<>();
     private HashMap<String, Table> tables = new HashMap<>();
 
+    private HashMap<String, String> variablesAddresses = new HashMap<>();
+
     int labelCounter = 0;
+
+    String currentScope = "main";
 
 
     /*
 
           ETAP I - TYPY, ZMIENNE, ODCZYT/ZAPIS Z KONSOLI
-
 
      */
 
@@ -36,17 +40,17 @@ public class LLVMActions extends VSCLLBaseListener {
         }
 
         if (ctx.var().getText().equals("int")) {
-            LLVMGenerator.declare_i32(ctx.ID().getText());
-            LLVMGenerator.assign_i32(ctx.ID().getText(), "0");
-            variables.put(ctx.ID().getText(), VariableType.INT);
+            LLVMGenerator.declare_i32_local();
+            LLVMGenerator.assign_i32((LLVMGenerator.reg-1)+"", "0");
+            variables.put(ctx.ID().getText(), new VariableInfo(VariableType.INT,(LLVMGenerator.reg-1)+"",currentScope));
         } else if (ctx.var().getText().equals("double")) {
-            LLVMGenerator.declare_double(ctx.ID().getText());
-            LLVMGenerator.assign_double(ctx.ID().getText(), "0.0");
-            variables.put(ctx.ID().getText(), VariableType.DOUBLE);
+            LLVMGenerator.declare_double_local();
+            LLVMGenerator.assign_double((LLVMGenerator.reg-1)+"", "0.0");
+            variables.put(ctx.ID().getText(),new VariableInfo(VariableType.DOUBLE,(LLVMGenerator.reg-1)+"",currentScope));
         } else if (ctx.var().getText().equals("char")) {
-            LLVMGenerator.declare_i8(ctx.ID().getText());
-            LLVMGenerator.assign_i8(ctx.ID().getText(), "0");
-            variables.put(ctx.ID().getText(), VariableType.CHAR);
+            LLVMGenerator.declare_i8_local();
+            LLVMGenerator.assign_i8((LLVMGenerator.reg-1)+"", "0");
+            variables.put(ctx.ID().getText(), new VariableInfo(VariableType.CHAR,(LLVMGenerator.reg-1)+"",currentScope));
         }
     }
 
@@ -60,21 +64,23 @@ public class LLVMActions extends VSCLLBaseListener {
         String size = ctx.index().INT().getText();
         String id = ctx.ID().getText();
 
-        if (tables.containsKey(id) || variables.containsKey(id)) {
+
+
+        if(isAlreadyDefined(id,currentScope)) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
             return;
         }
 
         if (ctx.var().getText().equals("int")) {
-            LLVMGenerator.declare_i32_array(id, size);
+            LLVMGenerator.declare_i32_array_local(id, size);
             tables.put(id, new Table(size, VariableType.INT));
         }
         if (ctx.var().getText().equals("double")) {
-            LLVMGenerator.declare_double_array(id, size);
+            LLVMGenerator.declare_double_array_local(id, size);
             tables.put(id, new Table(size, VariableType.DOUBLE));
         }
         if (ctx.var().getText().equals("char")) {
-            LLVMGenerator.declare_char_array(id, size);
+            LLVMGenerator.declare_char_array_local(id, size);
             tables.put(id, new Table(size, VariableType.CHAR));
         }
     }
@@ -101,7 +107,7 @@ public class LLVMActions extends VSCLLBaseListener {
         }
 
         String ID = ctx.ID().getText();
-        Value v = stack.pop();
+        StackValue v = stack.pop();
 
         if (variables.containsKey(ID)) {
             VariableType variableType = variables.get(ID);
@@ -173,7 +179,7 @@ public class LLVMActions extends VSCLLBaseListener {
     public void exitExpression_id(VSCLLParser.Expression_idContext ctx) {
 
         if (variables.containsKey(ctx.getText())) {
-            stack.push(new Value("%" + ctx.getText(), variables.get(ctx.getText())));
+            stack.push(new StackValue("%" + ctx.getText(), variables.get(ctx.getText()).variableType));
         } else {
             if (tables.containsKey(ctx.getText())) {
                 error(ctx.getStart().getLine(), "Table in this context must have an index");
@@ -189,7 +195,7 @@ public class LLVMActions extends VSCLLBaseListener {
         String number = ctx.getText();
         if (number.startsWith("(") && number.endsWith(")"))
             number = number.substring(1, number.length() - 1);
-        stack.push(new Value(number, VariableType.DOUBLE));
+        stack.push(new StackValue(number, VariableType.DOUBLE));
     }
 
     @Override
@@ -197,31 +203,31 @@ public class LLVMActions extends VSCLLBaseListener {
         String number = ctx.getText();
         if (number.startsWith("(") && number.endsWith(")"))
             number = number.substring(1, number.length() - 1);
-        stack.push(new Value(number, VariableType.INT));
+        stack.push(new StackValue(number, VariableType.INT));
     }
 
     @Override
     public void exitExpression_to_double(VSCLLParser.Expression_to_doubleContext ctx) {
-        Value value = stack.pop();
+        StackValue value = stack.pop();
         if (isKnownVariable(value.name)) {
             LLVMGenerator.load_i32(value.name);
             LLVMGenerator.sitofp("%" + (LLVMGenerator.reg - 1));
         } else {
             LLVMGenerator.sitofp(value.name);
         }
-        stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
+        stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
     }
 
     @Override
     public void exitExpression_to_int(VSCLLParser.Expression_to_intContext ctx) {
-        Value value = stack.pop();
+        StackValue value = stack.pop();
         if (isKnownVariable(value.name)) {
             LLVMGenerator.load_double(value.name);
             LLVMGenerator.fptosi("%" + (LLVMGenerator.reg - 1));
         } else {
             LLVMGenerator.fptosi(value.name);
         }
-        stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
+        stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
     }
 
     @Override
@@ -234,15 +240,15 @@ public class LLVMActions extends VSCLLBaseListener {
             Table table = tables.get(id);
             if (table.type.equals(VariableType.INT)) {
                 LLVMGenerator.load_i32_array(id, index, table.size);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
             if (table.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.load_i8_array(id, index, table.size);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.CHAR));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.CHAR));
             }
             if (table.type.equals(VariableType.DOUBLE)) {
                 LLVMGenerator.load_double_array(id, index, table.size);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
             }
         } else {
             error(ctx.getStart().getLine(), String.format("Table '%s' doesn't exists", id));
@@ -255,10 +261,10 @@ public class LLVMActions extends VSCLLBaseListener {
         text = text.substring(1, text.length() - 1);
         if (text.length() == 1) {
             char ch = text.charAt(0);
-            stack.push(new Value((int) ch + "", VariableType.CHAR));
+            stack.push(new StackValue((int) ch + "", VariableType.CHAR));
         } else if (text.length() == 2 && text.charAt(0) == '\\') {
             if (text.charAt(1) == '0') {
-                stack.push(new Value(0 + "", VariableType.CHAR));
+                stack.push(new StackValue(0 + "", VariableType.CHAR));
             }
         }
 
@@ -267,8 +273,8 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitAdd(VSCLLParser.AddContext ctx) {
-        Value v1 = stack.pop();
-        Value v2 = stack.pop();
+        StackValue v1 = stack.pop();
+        StackValue v2 = stack.pop();
         if (v1.type.equals(VariableType.CHAR)) {
             if (isKnownVariable(v1.name)) {
                 LLVMGenerator.load_i8(v1.name);
@@ -327,11 +333,11 @@ public class LLVMActions extends VSCLLBaseListener {
 
             if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.add_i32(v1.name, v2.name);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
             if (v1.type == VariableType.DOUBLE) {
                 LLVMGenerator.add_double(v1.name, v2.name);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
             }
         } else {
             error(ctx.getStart().getLine(), "add type mismatch");
@@ -340,8 +346,8 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitSubtract(VSCLLParser.SubtractContext ctx) {
-        Value v1 = stack.pop();
-        Value v2 = stack.pop();
+        StackValue v1 = stack.pop();
+        StackValue v2 = stack.pop();
 
         if (v1.type.equals(VariableType.CHAR)) {
             if (isKnownVariable(v1.name)) {
@@ -400,11 +406,11 @@ public class LLVMActions extends VSCLLBaseListener {
 
             if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.sub_i32(v2.name, v1.name);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
             if (v1.type == VariableType.DOUBLE) {
                 LLVMGenerator.sub_double(v2.name, v1.name);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
             }
         } else {
             error(ctx.getStart().getLine(), "subtract type mismatch");
@@ -413,8 +419,8 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitMultiplicate(VSCLLParser.MultiplicateContext ctx) {
-        Value v1 = stack.pop();
-        Value v2 = stack.pop();
+        StackValue v1 = stack.pop();
+        StackValue v2 = stack.pop();
 
         if (v1.type.equals(VariableType.CHAR)) {
             if (isKnownVariable(v1.name)) {
@@ -473,11 +479,11 @@ public class LLVMActions extends VSCLLBaseListener {
 
             if (v1.type == VariableType.INT || v1.type.equals(VariableType.CHAR)) {
                 LLVMGenerator.mult_i32(v1.name, v2.name);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.INT));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
             if (v1.type == VariableType.DOUBLE) {
                 LLVMGenerator.mult_double(v1.name, v2.name);
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
             }
         } else {
             error(ctx.getStart().getLine(), "mult type mismatch");
@@ -487,10 +493,10 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitAssing_variable(VSCLLParser.Assing_variableContext ctx) {
         String ID = ctx.ID().getText();
-        Value v = stack.pop();
+        StackValue v = stack.pop();
 
         if (variables.containsKey(ID)) {
-            VariableType variableType = variables.get(ID);
+            VariableType variableType = variables.get(ID).variableType;
 
             if (variableType.equals(VariableType.INT)) {
                 if (v.type.equals(VariableType.INT)) {
@@ -558,7 +564,7 @@ public class LLVMActions extends VSCLLBaseListener {
         if (index.startsWith("(") && index.endsWith(")"))
             index = index.substring(1, index.length() - 1);
 
-        Value value = stack.pop();
+        StackValue value = stack.pop();
 
         if (tables.containsKey(name)) {
             Table table = tables.get(name);
@@ -597,7 +603,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitPrint_expression(VSCLLParser.Print_expressionContext ctx) {
-        Value currentValue = stack.pop();
+        StackValue currentValue = stack.pop();
         if (currentValue.type.equals(VariableType.INT)) {
 
             if (variables.keySet().contains(currentValue.name.replaceFirst("%", ""))) {
@@ -633,7 +639,7 @@ public class LLVMActions extends VSCLLBaseListener {
         if (tables.containsKey(id)) {
             LLVMGenerator.print_char_array(id, tables.get(id).size);
         } else if (variables.containsKey(id)) {
-            VariableType variableType = variables.get(id);
+            VariableType variableType = variables.get(id).variableType;
             if(variableType.equals(VariableType.CHAR)) {
                 LLVMGenerator.print_i8_as_char("%" + id);
             }
@@ -798,8 +804,8 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     public void exitCondition(int lineNumber, ComparisonType comparisonType) {
-        Value v2 = stack.pop();
-        Value v1 = stack.pop();
+        StackValue v2 = stack.pop();
+        StackValue v1 = stack.pop();
 
         if (v1.type.equals(VariableType.CHAR)) {
             if (isKnownVariable(v1.name)) {
@@ -866,7 +872,7 @@ public class LLVMActions extends VSCLLBaseListener {
                 else if(comparisonType.equals(ComparisonType.GREATER_THAN)) {
                     LLVMGenerator.compare_greater_than_i32(v1.name, v2.name);
                 }
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
             }
             if (v1.type == VariableType.DOUBLE) {
                 if(comparisonType.equals(ComparisonType.EQUAL)) {
@@ -878,7 +884,7 @@ public class LLVMActions extends VSCLLBaseListener {
                 else if(comparisonType.equals(ComparisonType.GREATER_THAN)) {
                     LLVMGenerator.compare_greater_than_double(v1.name, v2.name);
                 }
-                stack.push(new Value("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
             }
         } else {
             error(lineNumber, "comparison type mismatch");
@@ -966,5 +972,18 @@ public class LLVMActions extends VSCLLBaseListener {
         return variables.keySet().contains(toCheck);
     }
 
+    public boolean isAlreadyDefined(String name, String scope) {
+        if(tables.containsKey(name)) {
+            Table table = tables.get(name);
+            if(table.scope.equals(scope))
+                return true;
+        }
+        else if (variables.containsKey(name)) {
+            VariableInfo variableInfo = variables.get(variables);
+            if(variableInfo.scope.equals(scope))
+                return true;
+        }
+        return false;
+    }
 
 }

@@ -2,15 +2,13 @@ package pl.mateuszkalinowski.vscllcompiler.entities;
 
 import pl.mateuszkalinowski.vscllcompiler.enums.VariableType;
 
-public class Table {
-    public String size;
-    public VariableType type;
+public class VariableInfo {
+    public VariableType variableType;
     public String address;
     public String scope;
 
-    public Table(String size, VariableType type, String address, String scope) {
-        this.size = size;
-        this.type = type;
+    public VariableInfo(VariableType variableType, String address, String scope) {
+        this.variableType = variableType;
         this.address = address;
         this.scope = scope;
     }
