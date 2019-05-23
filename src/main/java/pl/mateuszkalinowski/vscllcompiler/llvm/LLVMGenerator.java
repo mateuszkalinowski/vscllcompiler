@@ -8,7 +8,7 @@ class LLVMGenerator{
     private static int str_i = 5;
 
     static void print_i8_table_element(String id, String size, String index) {
-        main_text += " %"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += " %"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "%"+reg+" = load i8, i8* %"+(reg-1)+", align 1\n";
         reg++;
@@ -69,7 +69,7 @@ class LLVMGenerator{
     }
 
     static void print_char_array(String id, String size) {
-        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* %"+id+", i32 0, i32 0\n";
+        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* "+id+", i32 0, i32 0\n";
         reg++;
         main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.3, i32 0, i32 0), i8* %"+(reg-1)+")\n";
         reg++;
@@ -81,7 +81,7 @@ class LLVMGenerator{
     }
 
     static void scan_i32_array(String id, String index, String size) {
-        main_text += "%" + reg + " = getelementptr inbounds ["+size+" x i32], ["+size+" x i32]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%" + reg + " = getelementptr inbounds ["+size+" x i32], ["+size+" x i32]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "%" + reg + " = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32* %"+ (reg-1) + ")\n";
         reg++;
@@ -93,7 +93,7 @@ class LLVMGenerator{
     }
 
     static void scan_double_array(String id, String index, String size) {
-        main_text += "%" + reg + " = getelementptr inbounds ["+size+" x double], ["+size+" x double]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%" + reg + " = getelementptr inbounds ["+size+" x double], ["+size+" x double]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i32 0, i32 0), double* %"+ (reg-1)+ ")\n";
         reg++;
@@ -113,8 +113,9 @@ class LLVMGenerator{
         reg++;
     }
 
-    static void declare_text_pointer(String id) {
-        main_text += "%"+id+" = alloca i8*, align 8\n";
+    static void declare_text_pointer() {
+        main_text += "%"+reg+" = alloca i8*, align 8\n";
+        reg++;
     }
 
     static void declare_i32_array_local(String size) {
@@ -133,39 +134,39 @@ class LLVMGenerator{
     }
 
     static void assign_i8(String id, String value){
-        main_text += "store i8 "+value+", i8* %"+id+"\n";
+        main_text += "store i8 "+value+", i8* "+id+"\n";
     }
 
     static void assign_i32(String id, String value){
-        main_text += "store i32 "+value+", i32* %"+id+"\n";
+        main_text += "store i32 "+value+", i32* "+id+"\n";
     }
 
     static void assign_double(String id, String value){
-        main_text += "store double "+value+", double* %"+id+"\n";
+        main_text += "store double "+value+", double* "+id+"\n";
     }
 
-    static void assign_text_pointer(String id, String text) {
+    static void assign_text_pointer(String text) {
         int str_len = text.length();
         String str_type = "["+(str_len+2)+" x i8]";
         header_text += "@.str."+str_i+" = constant"+str_type+" c\""+text+"\\0A\\00\"\n";
         str_i++;
-        main_text += "store i8* getelementptr inbounds (" + str_type+", " + str_type+ "* @.str."+ (str_i-1) +", i32 0, i32 0), i8** %" + id + ", align 8\n";
+        main_text += "store i8* getelementptr inbounds (" + str_type+", " + str_type+ "* @.str."+ (str_i-1) +", i32 0, i32 0), i8** %" + (reg-1) + ", align 8\n";
     }
 
     static void assign_i32_array(String id, String index, String value, String size) {
-        main_text += "%"+reg +" = getelementptr inbounds ["+size+" x i32], ["+ size +" x i32]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%"+reg +" = getelementptr inbounds ["+size+" x i32], ["+ size +" x i32]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "store i32 "+value+", i32* %"+(reg-1)+", align 8\n";
     }
 
     static void assign_double_array(String id, String index, String value, String size) {
-        main_text += "%"+reg +" = getelementptr inbounds ["+size+" x double], ["+ size +" x double]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%"+reg +" = getelementptr inbounds ["+size+" x double], ["+ size +" x double]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "store double "+value+", double* %"+(reg-1)+", align 8\n";
     }
 
     static void assign_char_array(String id, String index, String value, String size) {
-        main_text += "%"+reg +" = getelementptr inbounds ["+size+" x i8], ["+ size +" x i8]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%"+reg +" = getelementptr inbounds ["+size+" x i8], ["+ size +" x i8]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "store i8 "+value+", i8* %"+(reg-1)+", align 1\n";
     }
@@ -186,21 +187,21 @@ class LLVMGenerator{
     }
 
     static void load_i8_array(String id, String index, String size) {
-        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i8], ["+size+" x i8]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "%"+reg+" = load i8, i8* %"+(reg-1)+", align 1\n";
         reg++;
     }
 
     static void load_i32_array(String id, String index, String size) {
-        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i32], ["+size+" x i32]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x i32], ["+size+" x i32]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "%"+reg+" = load i32, i32* %"+(reg-1)+", align 8\n";
         reg++;
     }
 
     static void load_double_array(String id, String index, String size) {
-        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x double], ["+size+" x double]* %"+id+", i64 0, i64 "+index+"\n";
+        main_text += "%"+reg+" = getelementptr inbounds ["+size+" x double], ["+size+" x double]* "+id+", i64 0, i64 "+index+"\n";
         reg++;
         main_text += "%"+reg+" = load double, double* %"+(reg-1)+", align 16\n";
         reg++;
@@ -294,10 +295,6 @@ class LLVMGenerator{
 
     static void label(String label) {
         main_text += label + ":\n";
-    }
-
-    static void conditional_jump_finish(String line) {
-       main_text = main_text.replaceAll(line,line + " %"+reg);
     }
 
     static String generate(){
