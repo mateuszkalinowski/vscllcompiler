@@ -1038,6 +1038,8 @@ public class LLVMActions extends VSCLLBaseListener {
                 LLVMGenerator.assign_i32(variables.get(stackValue.name).address,"%" + counter++);
             }
         }
+
+        functionParams.clear();
     }
 
     @Override
