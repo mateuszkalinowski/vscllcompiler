@@ -29,8 +29,6 @@ public class LLVMActions extends VSCLLBaseListener {
 
     private HashMap<String, FunctionInfo> functions = new HashMap<>();
 
-
-
     /*
 
           ETAP I - TYPY, ZMIENNE, ODCZYT/ZAPIS Z KONSOLI
@@ -93,7 +91,6 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx) {
         String ID = ctx.ID().getText();
-
         if(isAlreadyDefined(ID,currentScope)) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
             return;
@@ -275,6 +272,13 @@ public class LLVMActions extends VSCLLBaseListener {
         }
 
 
+    }
+
+    @Override
+    public void exitExpression_function_call(VSCLLParser.Expression_function_callContext ctx) {
+
+        VariableType variableType = functions.get(ctx.function_call().ID().getText()).functionType;
+        stack.push(new StackValue("%"+(LLVMGenerator.reg-1),variableType));
     }
 
     @Override
@@ -1097,6 +1101,48 @@ public class LLVMActions extends VSCLLBaseListener {
         currentType = null;
     }
 
+    @Override
+    public void exitExpressions_list(VSCLLParser.Expressions_listContext ctx) {
+        functionParams.clear();
+        while(!stack.isEmpty()) {
+            StackValue stackValue = stack.pop();
+            functionParams.add(stackValue);
+        }
+    }
+
+    @Override
+    public void exitFunction_call(VSCLLParser.Function_callContext ctx) {
+        String functionName = ctx.ID().getText();
+        String type = "";
+        if(functionParams.size() == functions.get(functionName).parametersTypes.size()) {
+            String params = "";
+            for(int i = functionParams.size()-1; i >= 0; i--) {
+                StackValue sv = functionParams.get(i);
+
+                if(sv.type.equals(VariableType.INT))
+                    type = "i32";
+                else if (sv.type.equals(VariableType.DOUBLE))
+                    type = "double";
+
+                params += type + " " + sv.name + ", ";
+            }
+            params = params.trim();
+            if(params.endsWith(","))
+                params = params.substring(0,params.length()-1);
+
+            if(functions.get(functionName).functionType.equals(VariableType.INT))
+                type = "i32";
+            else if (functions.get(functionName).functionType.equals(VariableType.DOUBLE))
+                type = "double";
+
+            LLVMGenerator.callFunction(functionName,params,type);
+        }
+        else {
+            error(ctx.getStart().getLine(),"Incorrect number of parameters in a function call");
+        }
+
+    }
+
     /*
 
             FINALIZACJA I FUNKCJE POMOCNICZE
@@ -1142,7 +1188,7 @@ public class LLVMActions extends VSCLLBaseListener {
                 return true;
         }
         else if (variables.containsKey(name)) {
-            VariableInfo variableInfo = variables.get(variables);
+            VariableInfo variableInfo = variables.get(name);
             if(variableInfo.scope.equals(scope))
                 return true;
         }

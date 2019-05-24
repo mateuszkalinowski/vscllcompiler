@@ -339,6 +339,11 @@ class LLVMGenerator {
         main_text += "}\n";
     }
 
+    public static void callFunction(String functionName, String params, String type) {
+        main_text += "%" + reg + " = call " + type + " @" + functionName + "(" + params + ")\n";
+        reg++;
+    }
+
     static String generate() {
         String text = "";
         text += "declare i32 @printf(i8*, ...)\n";
@@ -356,5 +361,4 @@ class LLVMGenerator {
       //  text += "ret i32 0 }\n";
         return text;
     }
-
 }

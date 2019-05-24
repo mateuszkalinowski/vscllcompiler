@@ -19,6 +19,7 @@ stat:           print SC
           |     declaration SC
           |     declaration_with_initialization SC
           |     assign SC
+          |     function_call SC
           |     if_statement
           |     while_statement
    ;
@@ -43,6 +44,14 @@ function_parameter: var ID
             |
         ;
 
+function_call: ID '(' expressions_list ')'
+        ;
+
+
+expressions_list:
+            (expression ',')* expression
+            |
+        ;
 condition:      expression '<'  expression         #condition_less_than
           |     expression '>'  expression         #condition_greater_than
           |     expression '==' expression         #condition_equal
@@ -54,6 +63,7 @@ expression :    TODOUBLE expression                #expression_to_double
           |     expression '/' expression          #divide
           |     expression '+' expression          #add
           |     expression '-' expression          #subtract
+          |     function_call                      #expression_function_call
           |     ID index                           #expression_index
           |     ID                                 #expression_id
           |     INT                                #expression_int

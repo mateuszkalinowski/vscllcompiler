@@ -1,3 +1,18 @@
+int test(int a) {
+return a*a;
+}
+
+int test2(int a, int b) {
+return a*b;
+}
+
 int main() {
+int x = test(2);
+print(x);
+x = test2(3,4);
+print(x);
+char a[1];
+a[0] = 97;
+prints(a[0]);
 return 0;
 }

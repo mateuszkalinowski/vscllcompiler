@@ -10,4 +10,12 @@ public class StackValue {
         this.name = name;
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "StackValue{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                '}';
+    }
 }

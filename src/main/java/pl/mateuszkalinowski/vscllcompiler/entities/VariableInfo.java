@@ -12,4 +12,13 @@ public class VariableInfo {
         this.address = address;
         this.scope = scope;
     }
+
+    @Override
+    public String toString() {
+        return "VariableInfo{" +
+                "variableType=" + variableType +
+                ", address='" + address + '\'' +
+                ", scope='" + scope + '\'' +
+                '}';
+    }
 }
