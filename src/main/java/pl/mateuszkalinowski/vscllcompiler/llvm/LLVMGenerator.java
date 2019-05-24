@@ -97,9 +97,9 @@ class LLVMGenerator {
     }
 
     static void print_char_array(String id, String size) {
-        main_text += "%" + reg + " = getelementptr inbounds [" + size + " x i8], [" + size + " x i8]* " + id + ", i32 0, i32 0\n";
+        main_text += "%" + reg + " = getelementptr inbounds [" + size + " x i32], [" + size + " x i32]* " + id + ", i32 0, i32 0\n";
         reg++;
-        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.3, i32 0, i32 0), i8* %" + (reg - 1) + ")\n";
+        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.3, i32 0, i32 0), i32* %" + (reg - 1) + ")\n";
         reg++;
     }
 

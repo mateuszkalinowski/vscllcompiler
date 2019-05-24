@@ -103,7 +103,7 @@ assign:           ID '=' expression                 #assing_variable
            |      ID index '=' expression           #assing_to_array
     ;
 
-var: 'int' | 'double' | 'char'
+var: 'int' | 'double'
     ;
 
 function_type: 'int' | 'double' | 'void'

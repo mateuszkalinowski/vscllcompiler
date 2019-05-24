@@ -46,7 +46,7 @@ public class VSCLLParser extends Parser {
 		return new String[] {
 			null, "'('", "')'", "'{'", "'}'", "'if'", "'return'", "'while'", "','", 
 			"'<'", "'>'", "'=='", "'*'", "'/'", "'+'", "'-'", "'print'", "'prints'", 
-			"'scani'", "'scand'", "'[]'", "'='", "'int'", "'double'", "'char'", "'void'", 
+			"'scani'", "'scand'", "'[]'", "'='", "'int'", "'double'", "'void'", "'char'", 
 			"'['", "']'", "'(int)'", "'(double)'", null, null, null, null, null, 
 			null, null, "';'"
 		};
@@ -146,13 +146,13 @@ public class VSCLLParser extends Parser {
 			setState(58);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__22) | (1L << T__24) | (1L << NEWLINE))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << NEWLINE))) != 0)) {
 				{
 				{
 				setState(53);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__22) | (1L << T__24))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__22) | (1L << T__23))) != 0)) {
 					{
 					setState(52);
 					function();
@@ -215,13 +215,13 @@ public class VSCLLParser extends Parser {
 			setState(67);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << ID) | (1L << NEWLINE))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__24) | (1L << ID) | (1L << NEWLINE))) != 0)) {
 				{
 				{
 				setState(62);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << ID))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__24) | (1L << ID))) != 0)) {
 					{
 					setState(61);
 					stat();
@@ -284,13 +284,13 @@ public class VSCLLParser extends Parser {
 			setState(76);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << ID) | (1L << NEWLINE))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__24) | (1L << ID) | (1L << NEWLINE))) != 0)) {
 				{
 				{
 				setState(71);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << ID))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__24) | (1L << ID))) != 0)) {
 					{
 					setState(70);
 					stat();
@@ -357,13 +357,13 @@ public class VSCLLParser extends Parser {
 			setState(85);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << ID) | (1L << NEWLINE))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__24) | (1L << ID) | (1L << NEWLINE))) != 0)) {
 				{
 				{
 				setState(80);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << ID))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << T__6) | (1L << T__15) | (1L << T__16) | (1L << T__17) | (1L << T__18) | (1L << T__21) | (1L << T__22) | (1L << T__24) | (1L << ID))) != 0)) {
 					{
 					setState(79);
 					stat();
@@ -862,7 +862,6 @@ public class VSCLLParser extends Parser {
 			switch (_input.LA(1)) {
 			case T__21:
 			case T__22:
-			case T__23:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(157);
@@ -2014,8 +2013,9 @@ public class VSCLLParser extends Parser {
 		try {
 			setState(294);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,23,_ctx) ) {
-			case 1:
+			switch (_input.LA(1)) {
+			case T__21:
+			case T__22:
 				_localctx = new Declaration_with_initialization_variableContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
@@ -2029,7 +2029,7 @@ public class VSCLLParser extends Parser {
 				expression(0);
 				}
 				break;
-			case 2:
+			case T__24:
 				_localctx = new Declaration_with_initialization_text_pointerContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
@@ -2045,6 +2045,8 @@ public class VSCLLParser extends Parser {
 				match(STRING);
 				}
 				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2198,7 +2200,7 @@ public class VSCLLParser extends Parser {
 			{
 			setState(309);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__22) | (1L << T__23))) != 0)) ) {
+			if ( !(_la==T__21 || _la==T__22) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2243,7 +2245,7 @@ public class VSCLLParser extends Parser {
 			{
 			setState(311);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__22) | (1L << T__24))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__21) | (1L << T__22) | (1L << T__23))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2286,7 +2288,7 @@ public class VSCLLParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(313);
-			match(T__23);
+			match(T__24);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2387,11 +2389,11 @@ public class VSCLLParser extends Parser {
 		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\5\26\u0129\n\26\3\27\3\27\3\27"+
 		"\3\27\3\27\3\27\3\27\3\27\3\27\3\27\3\27\5\27\u0136\n\27\3\30\3\30\3\31"+
 		"\3\31\3\32\3\32\3\33\3\33\3\33\3\33\3\33\2\3\36\34\2\4\6\b\n\f\16\20\22"+
-		"\24\26\30\32\34\36 \"$&(*,.\60\62\64\2\4\3\2\30\32\4\2\30\31\33\33\2\u0154"+
-		"\2<\3\2\2\2\4E\3\2\2\2\6N\3\2\2\2\bW\3\2\2\2\ny\3\2\2\2\f{\3\2\2\2\16"+
-		"\u0084\3\2\2\2\20\u008c\3\2\2\2\22\u0090\3\2\2\2\24\u009d\3\2\2\2\26\u00a3"+
-		"\3\2\2\2\30\u00a5\3\2\2\2\32\u00b4\3\2\2\2\34\u00c2\3\2\2\2\36\u00d0\3"+
-		"\2\2\2 \u00e3\3\2\2\2\"\u00f6\3\2\2\2$\u0102\3\2\2\2&\u010e\3\2\2\2(\u011b"+
+		"\24\26\30\32\34\36 \"$&(*,.\60\62\64\2\4\3\2\30\31\3\2\30\32\2\u0154\2"+
+		"<\3\2\2\2\4E\3\2\2\2\6N\3\2\2\2\bW\3\2\2\2\ny\3\2\2\2\f{\3\2\2\2\16\u0084"+
+		"\3\2\2\2\20\u008c\3\2\2\2\22\u0090\3\2\2\2\24\u009d\3\2\2\2\26\u00a3\3"+
+		"\2\2\2\30\u00a5\3\2\2\2\32\u00b4\3\2\2\2\34\u00c2\3\2\2\2\36\u00d0\3\2"+
+		"\2\2 \u00e3\3\2\2\2\"\u00f6\3\2\2\2$\u0102\3\2\2\2&\u010e\3\2\2\2(\u011b"+
 		"\3\2\2\2*\u0128\3\2\2\2,\u0135\3\2\2\2.\u0137\3\2\2\2\60\u0139\3\2\2\2"+
 		"\62\u013b\3\2\2\2\64\u013d\3\2\2\2\668\5\f\7\2\67\66\3\2\2\2\678\3\2\2"+
 		"\289\3\2\2\29;\7%\2\2:\67\3\2\2\2;>\3\2\2\2<:\3\2\2\2<=\3\2\2\2=\3\3\2"+
@@ -2468,7 +2470,7 @@ public class VSCLLParser extends Parser {
 		"\27\2\2\u0133\u0134\5\36\20\2\u0134\u0136\3\2\2\2\u0135\u012a\3\2\2\2"+
 		"\u0135\u012d\3\2\2\2\u0135\u0130\3\2\2\2\u0136-\3\2\2\2\u0137\u0138\t"+
 		"\2\2\2\u0138/\3\2\2\2\u0139\u013a\t\3\2\2\u013a\61\3\2\2\2\u013b\u013c"+
-		"\7\32\2\2\u013c\63\3\2\2\2\u013d\u013e\7\34\2\2\u013e\u013f\7#\2\2\u013f"+
+		"\7\33\2\2\u013c\63\3\2\2\2\u013d\u013e\7\34\2\2\u013e\u013f\7#\2\2\u013f"+
 		"\u0140\7\35\2\2\u0140\65\3\2\2\2\33\67<@EINRW]y\u008e\u009d\u00a3\u00af"+
 		"\u00b4\u00c2\u00d0\u00de\u00e0\u00f6\u0102\u010e\u011b\u0128\u0135";
 	public static final ATN _ATN =

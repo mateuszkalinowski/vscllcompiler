@@ -7,12 +7,9 @@ return a*b;
 }
 
 int main() {
-int x = test(2);
-print(x);
-x = test2(3,4);
-print(x);
-char a[1];
-a[0] = 97;
-prints(a[0]);
+int tab[2];
+tab[0] = 'a';
+tab[1] = 'b';
+prints(tab);
 return 0;
 }
