@@ -1,5 +1,6 @@
 package pl.mateuszkalinowski.vscllcompiler.llvm;
 
+import pl.mateuszkalinowski.vscllcompiler.entities.FunctionInfo;
 import pl.mateuszkalinowski.vscllcompiler.entities.Table;
 import pl.mateuszkalinowski.vscllcompiler.entities.StackValue;
 import pl.mateuszkalinowski.vscllcompiler.entities.VariableInfo;
@@ -8,8 +9,7 @@ import pl.mateuszkalinowski.vscllcompiler.enums.VariableType;
 import pl.mateuszkalinowski.vscllcompiler.generated.VSCLLBaseListener;
 import pl.mateuszkalinowski.vscllcompiler.generated.VSCLLParser;
 
-import java.util.HashMap;
-import java.util.Stack;
+import java.util.*;
 
 
 public class LLVMActions extends VSCLLBaseListener {
@@ -23,6 +23,12 @@ public class LLVMActions extends VSCLLBaseListener {
     private int labelCounter = 0;
 
     private String currentScope = "main";
+    private VariableType currentType = null;
+
+    private ArrayList<StackValue> functionParams = new ArrayList<>();
+
+    private HashMap<String, FunctionInfo> functions = new HashMap<>();
+
 
 
     /*
@@ -956,6 +962,138 @@ public class LLVMActions extends VSCLLBaseListener {
         LLVMGenerator.label(end);
     }
 
+    /*
+
+
+            FUNKCJE
+
+
+     */
+
+    @Override
+    public void exitFunction_parameter(VSCLLParser.Function_parameterContext ctx) {
+        try {
+        if(ctx.var().getText().equals("int")) {
+            functionParams.add(new StackValue(ctx.ID().getText(),VariableType.INT));
+        }
+        if(ctx.var().getText().equals("double")) {
+            functionParams.add(new StackValue(ctx.ID().getText(),VariableType.DOUBLE));
+        }
+        } catch (Exception ignored) {
+
+        }
+
+    }
+
+    @Override
+    public void enterFunction(VSCLLParser.FunctionContext ctx) {
+        if(ctx.function_type().getText().equals("int"))
+            currentType = VariableType.INT;
+        else if(ctx.function_type().getText().equals("double"))
+            currentType = VariableType.DOUBLE;
+        else if(ctx.function_type().getText().equals("void"))
+            currentType = VariableType.VOID;
+
+        currentScope = ctx.ID().getText();
+
+        functions.put(currentScope,new FunctionInfo(currentType));
+
+    }
+
+    @Override
+    public void enterFunction_block(VSCLLParser.Function_blockContext ctx) {
+        String type = "";
+        String params = "";
+        String name = currentScope;
+        if(currentType.equals(VariableType.INT)) {
+            type = "i32";
+        }
+        else if (currentType.equals(VariableType.DOUBLE)) {
+            type = "double";
+        }
+
+
+        for(StackValue stackValue : functionParams) {
+            if(stackValue.type.equals(VariableType.INT))
+                params += "i32, ";
+            else if (stackValue.type.equals(VariableType.DOUBLE))
+                params += "double, ";
+            functions.get(currentScope).parametersTypes.add(0,stackValue.type);
+        }
+        params = params.trim();
+
+        if(params.endsWith(","))
+            params = params.substring(0,params.length()-1);
+
+        LLVMGenerator.defineFunction(type,name,params,functionParams.size());
+
+        int counter = 0;
+        for(StackValue stackValue : functionParams) {
+            if(stackValue.type.equals(VariableType.INT)) {
+                LLVMGenerator.declare_i32_local();
+                if(isAlreadyDefined(stackValue.name,currentScope)) {
+                    error(ctx.getStart().getLine(),"Duplicate parameters names");
+                }
+                variables.put(stackValue.name,new VariableInfo(VariableType.INT,"%"+(LLVMGenerator.reg-1),currentScope));
+                LLVMGenerator.assign_i32(variables.get(stackValue.name).address,"%" + counter++);
+            }
+        }
+    }
+
+    @Override
+    public void exitReturn_statement(VSCLLParser.Return_statementContext ctx) {
+        if(ctx.expression() == null) {
+            LLVMGenerator.return_statement("void","");
+        }
+        else {
+            StackValue stackValue = stack.pop();
+            String type = "";
+
+            if(currentType.equals(VariableType.INT))
+                type = "i32";
+            else if(currentType.equals(VariableType.DOUBLE))
+                type = "double";
+
+            if (stackValue.type.equals(VariableType.INT)) {
+                if (isKnownVariable(stackValue.name)) {
+                    LLVMGenerator.load_i32(stackValue.name);
+                    stackValue.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            } else if (stackValue.type.equals(VariableType.DOUBLE)) {
+                if (isKnownVariable(stackValue.name)) {
+                    LLVMGenerator.load_double(stackValue.name);
+                    stackValue.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            } else if (stackValue.type.equals(VariableType.CHAR)) {
+                if (isKnownVariable(stackValue.name)) {
+                    LLVMGenerator.load_i8(stackValue.name);
+                    LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg - 1));
+                    stackValue.name = "%" + (LLVMGenerator.reg - 1);
+                    stackValue.type = VariableType.INT;
+                } else if (stackValue.name.startsWith("%")) {
+                    //LLVMGenerator.load_i8(v1.name);
+                    LLVMGenerator.i8toi32("%" + (LLVMGenerator.reg - 1));
+                    stackValue.name = "%" + (LLVMGenerator.reg - 1);
+                    stackValue.type = VariableType.INT;
+                } else {
+                    stackValue.type = VariableType.INT;
+                }
+            }
+
+            LLVMGenerator.return_statement(type, stackValue.name);
+        }
+    }
+
+    @Override
+    public void exitFunction_block(VSCLLParser.Function_blockContext ctx) {
+        LLVMGenerator.closeFunction();
+    }
+
+    @Override
+    public void exitFunction(VSCLLParser.FunctionContext ctx) {
+        currentScope = "global";
+        currentType = null;
+    }
 
     /*
 

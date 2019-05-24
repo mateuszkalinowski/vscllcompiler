@@ -38,6 +38,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitWhile_block(VSCLLParser.While_blockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#function_block}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_block(VSCLLParser.Function_blockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#function_block}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_block(VSCLLParser.Function_blockContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#stat}.
 	 * @param ctx the parse tree
 	 */
@@ -47,6 +57,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStat(VSCLLParser.StatContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction(VSCLLParser.FunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction(VSCLLParser.FunctionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#if_statement}.
 	 * @param ctx the parse tree
@@ -58,6 +78,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 */
 	void exitIf_statement(VSCLLParser.If_statementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#return_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn_statement(VSCLLParser.Return_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#return_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn_statement(VSCLLParser.Return_statementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#while_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -67,6 +97,26 @@ public interface VSCLLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWhile_statement(VSCLLParser.While_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#function_parameters}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_parameters(VSCLLParser.Function_parametersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#function_parameters}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_parameters(VSCLLParser.Function_parametersContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#function_parameter}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_parameter(VSCLLParser.Function_parameterContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#function_parameter}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_parameter(VSCLLParser.Function_parameterContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code condition_less_than}
 	 * labeled alternative in {@link VSCLLParser#condition}.
@@ -437,6 +487,16 @@ public interface VSCLLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVar(VSCLLParser.VarContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link VSCLLParser#function_type}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction_type(VSCLLParser.Function_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link VSCLLParser#function_type}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction_type(VSCLLParser.Function_typeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VSCLLParser#text_pointer}.
 	 * @param ctx the parse tree

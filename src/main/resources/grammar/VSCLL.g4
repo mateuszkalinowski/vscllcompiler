@@ -1,12 +1,15 @@
 grammar VSCLL;
 
-prog: ( stat? NEWLINE )*
+prog: ( function? NEWLINE )*
     ;
 
 if_block: (stat? NEWLINE)*
     ;
 
 while_block: (stat? NEWLINE)*
+    ;
+
+function_block: (stat? NEWLINE)* return_statement SC NEWLINE?
     ;
 
 stat:           print SC
@@ -20,11 +23,25 @@ stat:           print SC
           |     while_statement
    ;
 
+function: function_type ID '(' function_parameters ')' '{' function_block '}'
+    ;
 if_statement: 'if' '('condition')' '{' if_block '}'
     ;
 
+return_statement: 'return' expression?
+            ;
+
 while_statement: 'while' '(' condition ')' '{' while_block '}'
     ;
+
+function_parameters:
+                        function_parameter
+            |           function_parameter ',' function_parameters
+            ;
+
+function_parameter: var ID
+            |
+        ;
 
 condition:      expression '<'  expression         #condition_less_than
           |     expression '>'  expression         #condition_greater_than
@@ -77,6 +94,9 @@ assign:           ID '=' expression                 #assing_variable
     ;
 
 var: 'int' | 'double' | 'char'
+    ;
+
+function_type: 'int' | 'double' | 'void'
     ;
 
 text_pointer: 'char';

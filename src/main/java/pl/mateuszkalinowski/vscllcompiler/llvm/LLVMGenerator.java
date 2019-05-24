@@ -18,52 +18,66 @@ class LLVMGenerator {
         reg++;
     }
 
-    static void print_i8_as_char(String id, boolean isKNownVariable) {
-        if(isKNownVariable) {
+    static void print_i8_as_char(String id, boolean isKnownVariable) {
+        if(isKnownVariable) {
             load_i8(id);
             main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 %" + (reg - 1) + ")\n";
+            reg++;
         }
-        i8toi32("%" + (reg - 1));
-        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 " + id + ")\n";
-        reg++;
+        else {
+            i8toi32("%" + (reg - 1));
+            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 " + id + ")\n";
+            reg++;
+        }
     }
 
     static void print_i8(String id, boolean isKnownVariable) {
         if (isKnownVariable) {
             load_i8(id);
             main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i8 %" + (reg - 1) + ")\n";
-
+            reg++;
         }
-        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i8 "+id+")\n";
-        reg++;
+        else {
+            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i8 " + id + ")\n";
+            reg++;
+        }
+
     }
 
     static void print_i32(String id, boolean isKnownVariable) {
         if (isKnownVariable) {
             load_i32(id);
             main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i32 %" + (reg - 1) + ")\n";
-
+            reg++;
         }
-        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i32 " + id + ")\n";
-        reg++;
+        else {
+            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i32 " + id + ")\n";
+            reg++;
+        }
     }
 
     static void print_i32_as_char(String id, boolean isKnownVariable) {
         if (isKnownVariable) {
             load_i32(id);
             main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 %" + (reg - 1) + ")\n";
+            reg++;
         }
-        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 " + id + ")\n";
-        reg++;
+        else {
+            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 " + id + ")\n";
+            reg++;
+        }
     }
 
     static void print_double(String id, boolean isKnownVariable) {
         if(isKnownVariable) {
             load_double(id);
             main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %" + (reg - 1) + ")\n";
+            reg++;
         }
-        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double " + id + ")\n";
-        reg++;
+        else {
+            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double " + id + ")\n";
+            reg++;
+        }
     }
 
     static void print_text_pointer(String id) {
@@ -312,6 +326,19 @@ class LLVMGenerator {
         main_text += label + ":\n";
     }
 
+    static void return_statement(String type, String address) {
+        main_text +="ret " + type + " " + address + "\n";
+    }
+
+    static void defineFunction(String type, String name, String params, int paramsCount) {
+        main_text += "define " + type + " @" + name + "(" + params + ") #0 {\n";
+        reg = paramsCount + 1;
+    }
+
+    static void closeFunction(){
+        main_text += "}\n";
+    }
+
     static String generate() {
         String text = "";
         text += "declare i32 @printf(i8*, ...)\n";
@@ -322,11 +349,11 @@ class LLVMGenerator {
         text += "@.str.1 = constant [4 x i8] c\"%lf\\00\"\n";
         text += "@.str.2 = constant [3 x i8] c\"%s\\00\"\n";
         text += "@.str.3 = constant [4 x i8] c\"%s\\0A\\00\"\n";
-        text += "@.str.4 = constant [4 x i8] c\"%c\\0A\\00\", align 1";
+        text += "@.str.4 = constant [4 x i8] c\"%c\\0A\\00\", align 1\n";
         text += header_text;
-        text += "define i32 @main() nounwind{\n";
+      //  text += "define i32 @main() nounwind{\n";
         text += main_text;
-        text += "ret i32 0 }\n";
+      //  text += "ret i32 0 }\n";
         return text;
     }
 
