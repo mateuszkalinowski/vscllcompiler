@@ -1,15 +1,6 @@
-int test(int a) {
-return a*a;
-}
-
-int test2(int a, int b) {
-return a*b;
-}
+char tekst[] = "ala";
 
 int main() {
-int tab[2];
-tab[0] = 'a';
-tab[1] = 'b';
-prints(tab);
+prints(tekst);
 return 0;
 }

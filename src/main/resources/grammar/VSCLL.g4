@@ -1,8 +1,13 @@
 grammar VSCLL;
 
-prog: ( function? NEWLINE )*
+prog: ( outer_statements? NEWLINE )*
     ;
 
+outer_statements:
+                  function
+           |      declaration SC
+           |      declaration_with_initialization SC
+    ;
 if_block: (stat? NEWLINE)*
     ;
 
@@ -43,10 +48,6 @@ function_parameters:
 function_parameter: var ID
             |
         ;
-
-function_call: ID '(' expressions_list ')'
-        ;
-
 
 expressions_list:
             (expression ',')* expression
@@ -113,6 +114,9 @@ text_pointer: 'char';
 
 index: '[' INT ']'
     ;
+
+function_call: ID '(' expressions_list ')'
+        ;
 
 TOINT: '(int)'
     ;

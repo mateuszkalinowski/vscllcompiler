@@ -22,7 +22,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
     private int labelCounter = 0;
 
-    private String currentScope = "main";
+    private String currentScope = "global";
     private VariableType currentType = null;
 
     private ArrayList<StackValue> functionParams = new ArrayList<>();
@@ -39,19 +39,28 @@ public class LLVMActions extends VSCLLBaseListener {
     public void exitDeclaration_variable(VSCLLParser.Declaration_variableContext ctx) {
         String id = ctx.ID().getText();
 
-        if(isAlreadyDefined(id,currentScope)) {
+        if (isAlreadyDefined(id, currentScope)) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
             return;
         }
-
-        if (ctx.var().getText().equals("int")) {
-            LLVMGenerator.declare_i32_local();
-            LLVMGenerator.assign_i32("%"+(LLVMGenerator.reg-1)+"", "0");
-            variables.put(id, new VariableInfo(VariableType.INT,"%"+(LLVMGenerator.reg-1)+"",currentScope));
-        } else if (ctx.var().getText().equals("double")) {
-            LLVMGenerator.declare_double_local();
-            LLVMGenerator.assign_double("%"+(LLVMGenerator.reg-1)+"", "0.0");
-            variables.put(id,new VariableInfo(VariableType.DOUBLE,"%"+(LLVMGenerator.reg-1)+"",currentScope));
+        if (!currentScope.equals("global")) {
+            if (ctx.var().getText().equals("int")) {
+                LLVMGenerator.declare_i32_local();
+                LLVMGenerator.assign_i32("%" + (LLVMGenerator.reg - 1) + "", "0");
+                variables.put(id, new VariableInfo(VariableType.INT, "%" + (LLVMGenerator.reg - 1) + "", currentScope));
+            } else if (ctx.var().getText().equals("double")) {
+                LLVMGenerator.declare_double_local();
+                LLVMGenerator.assign_double("%" + (LLVMGenerator.reg - 1) + "", "0.0");
+                variables.put(id, new VariableInfo(VariableType.DOUBLE, "%" + (LLVMGenerator.reg - 1) + "", currentScope));
+            }
+        } else {
+            if (ctx.var().getText().equals("int")) {
+                LLVMGenerator.declare_i32_global(id, "0");
+                variables.put(id, new VariableInfo(VariableType.INT, "@" + id, currentScope));
+            } else if (ctx.var().getText().equals("double")) {
+                LLVMGenerator.declare_double_global(id, "0");
+                variables.put(id, new VariableInfo(VariableType.DOUBLE, "@" + id, currentScope));
+            }
         }
     }
 
@@ -65,87 +74,118 @@ public class LLVMActions extends VSCLLBaseListener {
         String size = ctx.index().INT().getText();
         String id = ctx.ID().getText();
 
-        if(isAlreadyDefined(id,currentScope)) {
+        if (isAlreadyDefined(id, currentScope)) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
             return;
         }
 
         if (ctx.var().getText().equals("int")) {
             LLVMGenerator.declare_i32_array_local(size);
-            tables.put(id, new Table(size, VariableType.INT,"%"+(LLVMGenerator.reg-1)+"", currentScope));
+            tables.put(id, new Table(size, VariableType.INT, "%" + (LLVMGenerator.reg - 1) + "", currentScope));
         }
         if (ctx.var().getText().equals("double")) {
             LLVMGenerator.declare_double_array_local(size);
-            tables.put(id, new Table(size, VariableType.DOUBLE,"%"+(LLVMGenerator.reg-1)+"", currentScope));
+            tables.put(id, new Table(size, VariableType.DOUBLE, "%" + (LLVMGenerator.reg - 1) + "", currentScope));
         }
     }
 
     @Override
     public void exitDeclaration_with_initialization_variable(VSCLLParser.Declaration_with_initialization_variableContext ctx) {
-        String ID = ctx.ID().getText();
-        if(isAlreadyDefined(ID,currentScope)) {
+        String variableName = ctx.ID().getText();
+        if (isAlreadyDefined(variableName, currentScope)) {
             error(ctx.getStart().getLine(), String.format("Variable '%s' already defined", ctx.ID().getText()));
             return;
         }
 
-        if (ctx.var().getText().equals("int")) {
-            LLVMGenerator.declare_i32_local();
-            LLVMGenerator.assign_i32("%"+(LLVMGenerator.reg-1)+"", "0");
-            variables.put(ID, new VariableInfo(VariableType.INT,"%"+(LLVMGenerator.reg-1)+"",currentScope));
-        } else if (ctx.var().getText().equals("double")) {
-            LLVMGenerator.declare_double_local();
-            LLVMGenerator.assign_double("%"+(LLVMGenerator.reg-1)+"", "0.0");
-            variables.put(ID,new VariableInfo(VariableType.DOUBLE,"%"+(LLVMGenerator.reg-1)+"",currentScope));
-        }
-
-        StackValue v = stack.pop();
-        ID = variables.get(ID).address;
-
-        if (isKnownVariable(ID)) {
-            VariableType variableType = variables.get(getVariableNameByAddressAndScope(ID,currentScope)).variableType;
-
-            if (variableType.equals(VariableType.INT)) {
-                if (v.type.equals(VariableType.INT)) {
-                    if (isKnownVariable(v.name  )) {
-                        LLVMGenerator.load_i32(v.name);
-                        LLVMGenerator.assign_i32(ID, "%" + (LLVMGenerator.reg - 1));
-                    } else {
-                        LLVMGenerator.assign_i32(ID, v.name);
-                    }
-                }
-                else {
-                    error(ctx.getStart().getLine(),"assign type mismatch");
-                }
+        if (!currentScope.equals("global")) {
+            if (ctx.var().getText().equals("int")) {
+                LLVMGenerator.declare_i32_local();
+                LLVMGenerator.assign_i32("%" + (LLVMGenerator.reg - 1) + "", "0");
+                variables.put(variableName, new VariableInfo(VariableType.INT, "%" + (LLVMGenerator.reg - 1) + "", currentScope));
+            } else if (ctx.var().getText().equals("double")) {
+                LLVMGenerator.declare_double_local();
+                LLVMGenerator.assign_double("%" + (LLVMGenerator.reg - 1) + "", "0.0");
+                variables.put(variableName, new VariableInfo(VariableType.DOUBLE, "%" + (LLVMGenerator.reg - 1) + "", currentScope));
             }
-            if (variableType.equals(VariableType.DOUBLE)) {
-                if(v.type.equals(VariableType.DOUBLE)) {
-                    if (isKnownVariable(v.name)) {
-                        LLVMGenerator.load_double(v.name);
-                        LLVMGenerator.assign_double(ID, "%" + (LLVMGenerator.reg - 1));
+
+
+            StackValue v = stack.pop();
+            String ID = getVariable(variableName).address;
+
+            if (isKnownVariable(ID)) {
+                VariableType variableType = getVariable(variableName).variableType;
+
+                if (variableType.equals(VariableType.INT)) {
+                    if (v.type.equals(VariableType.INT)) {
+                        if (isKnownVariable(v.name)) {
+                            LLVMGenerator.load_i32(v.name);
+                            LLVMGenerator.assign_i32(ID, "%" + (LLVMGenerator.reg - 1));
+                        } else {
+                            LLVMGenerator.assign_i32(ID, v.name);
+                        }
                     } else {
-                        LLVMGenerator.assign_double(ID, v.name);
+                        error(ctx.getStart().getLine(), "assign type mismatch");
                     }
                 }
-                else {
-                    error(ctx.getStart().getLine(),"assign type mismatch");
+                if (variableType.equals(VariableType.DOUBLE)) {
+                    if (v.type.equals(VariableType.DOUBLE)) {
+                        if (isKnownVariable(v.name)) {
+                            LLVMGenerator.load_double(v.name);
+                            LLVMGenerator.assign_double(ID, "%" + (LLVMGenerator.reg - 1));
+                        } else {
+                            LLVMGenerator.assign_double(ID, v.name);
+                        }
+                    } else {
+                        error(ctx.getStart().getLine(), "assign type mismatch");
+                    }
                 }
+
+            } else {
+                error(ctx.getStart().getLine(), String.format("Variable '%s' doesn't exists", ID));
             }
 
         } else {
-            error(ctx.getStart().getLine(), String.format("Variable '%s' doesn't exists", ID));
+
+            StackValue v = stack.pop();
+
+
+            if (ctx.var().getText().equals("int")) {
+                if (v.type.equals(VariableType.INT)) {
+                    LLVMGenerator.declare_i32_global(variableName, v.name);
+                    variables.put(variableName, new VariableInfo(VariableType.INT, "@" + variableName, currentScope));
+                } else {
+                    error(ctx.getStart().getLine(), "Mismatch types in assign");
+                }
+            } else if (ctx.var().getText().equals("double")) {
+                if (v.type.equals(VariableType.DOUBLE)) {
+                    LLVMGenerator.declare_double_global(variableName, v.name);
+                    variables.put(variableName, new VariableInfo(VariableType.DOUBLE, "@" + variableName, currentScope));
+                } else {
+                    error(ctx.getStart().getLine(), "Mismatch types in assign");
+                }
+            }
         }
+
+
     }
 
     @Override
     public void exitDeclaration_with_initialization_text_pointer(VSCLLParser.Declaration_with_initialization_text_pointerContext ctx) {
+
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
+
+
         if (variables.containsKey(ctx.ID().getText()) || tables.containsKey(ctx.ID().getText())) {
             error(ctx.getStart().getLine(), String.format("Variable, '%s' already exists", ctx.ID().getText()));
         } else {
-            LLVMGenerator.declare_text_pointer();
+
+            LLVMGenerator.declare_text_pointer_local();
             String text = ctx.STRING().getText();
             text = text.substring(1, text.length() - 1);
             LLVMGenerator.assign_text_pointer(text);
-            variables.put(ctx.ID().getText(), new VariableInfo(VariableType.TEXT_POINTER,"%"+(LLVMGenerator.reg-1),currentScope));
+            variables.put(ctx.ID().getText(), new VariableInfo(VariableType.TEXT_POINTER, "%" + (LLVMGenerator.reg - 1), currentScope));
+
         }
 
     }
@@ -154,8 +194,11 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitExpression_id(VSCLLParser.Expression_idContext ctx) {
 
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
+
         if (variables.containsKey(ctx.getText())) {
-            stack.push(new StackValue(variables.get(ctx.getText()).address, variables.get(ctx.getText()).variableType));
+            stack.push(new StackValue(getVariable(ctx.getText()).address, getVariable(ctx.getText()).variableType));
         } else {
             if (tables.containsKey(ctx.getText())) {
                 error(ctx.getStart().getLine(), "Table in this context must have an index");
@@ -184,6 +227,8 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitExpression_to_double(VSCLLParser.Expression_to_doubleContext ctx) {
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
         StackValue value = stack.pop();
         if (isKnownVariable(value.name)) {
             LLVMGenerator.load_i32(value.name);
@@ -196,6 +241,8 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitExpression_to_int(VSCLLParser.Expression_to_intContext ctx) {
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
         StackValue value = stack.pop();
         if (isKnownVariable(value.name)) {
             LLVMGenerator.load_double(value.name);
@@ -208,6 +255,8 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitExpression_index(VSCLLParser.Expression_indexContext ctx) {
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
         String id = ctx.ID().getText();
         String index = ctx.index().getText();
         index = index.substring(1, index.length() - 1);
@@ -246,15 +295,24 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitExpression_function_call(VSCLLParser.Expression_function_callContext ctx) {
 
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
+
+
         VariableType variableType = functions.get(ctx.function_call().ID().getText()).functionType;
-        stack.push(new StackValue("%"+(LLVMGenerator.reg-1),variableType));
+        stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), variableType));
     }
 
     @Override
     public void exitAdd(VSCLLParser.AddContext ctx) {
+
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
+
+
         StackValue v1 = stack.pop();
         StackValue v2 = stack.pop();
-         if (v1.type.equals(VariableType.INT)) {
+        if (v1.type.equals(VariableType.INT)) {
             if (isKnownVariable(v1.name)) {
                 LLVMGenerator.load_i32(v1.name);
                 v1.name = "%" + (LLVMGenerator.reg - 1);
@@ -282,7 +340,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
         if (v1.type.equals(v2.type)) {
 
-            if (v1.type == VariableType.INT ) {
+            if (v1.type == VariableType.INT) {
                 LLVMGenerator.add_i32(v1.name, v2.name);
                 stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
@@ -297,51 +355,11 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitSubtract(VSCLLParser.SubtractContext ctx) {
-        StackValue v1 = stack.pop();
-        StackValue v2 = stack.pop();
 
-         if (v1.type.equals(VariableType.INT)) {
-            if (isKnownVariable(v1.name)) {
-                LLVMGenerator.load_i32(v1.name);
-                v1.name = "%" + (LLVMGenerator.reg - 1);
-            }
-        } else if (v1.type.equals(VariableType.DOUBLE)) {
-            if (isKnownVariable(v1.name)) {
-                LLVMGenerator.load_double(v1.name);
-                v1.name = "%" + (LLVMGenerator.reg - 1);
-            }
-        }
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
 
 
-       if (v2.type.equals(VariableType.INT)) {
-            if (isKnownVariable(v2.name)) {
-                LLVMGenerator.load_i32(v2.name);
-                v2.name = "%" + (LLVMGenerator.reg - 1);
-            }
-        } else if (v2.type.equals(VariableType.DOUBLE)) {
-            if (isKnownVariable(v2.name)) {
-                LLVMGenerator.load_double(v2.name);
-                v2.name = "%" + (LLVMGenerator.reg - 1);
-            }
-        }
-
-        if (v1.type == v2.type) {
-
-            if (v1.type == VariableType.INT ) {
-                LLVMGenerator.sub_i32(v2.name, v1.name);
-                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
-            }
-            if (v1.type == VariableType.DOUBLE) {
-                LLVMGenerator.sub_double(v2.name, v1.name);
-                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
-            }
-        } else {
-            error(ctx.getStart().getLine(), "subtract type mismatch");
-        }
-    }
-
-    @Override
-    public void exitMultiplicate(VSCLLParser.MultiplicateContext ctx) {
         StackValue v1 = stack.pop();
         StackValue v2 = stack.pop();
 
@@ -372,7 +390,57 @@ public class LLVMActions extends VSCLLBaseListener {
 
         if (v1.type == v2.type) {
 
-            if (v1.type == VariableType.INT ) {
+            if (v1.type == VariableType.INT) {
+                LLVMGenerator.sub_i32(v2.name, v1.name);
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
+            }
+            if (v1.type == VariableType.DOUBLE) {
+                LLVMGenerator.sub_double(v2.name, v1.name);
+                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.DOUBLE));
+            }
+        } else {
+            error(ctx.getStart().getLine(), "subtract type mismatch");
+        }
+    }
+
+    @Override
+    public void exitMultiplicate(VSCLLParser.MultiplicateContext ctx) {
+
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
+
+
+        StackValue v1 = stack.pop();
+        StackValue v2 = stack.pop();
+
+        if (v1.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_i32(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if (v1.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v1.name)) {
+                LLVMGenerator.load_double(v1.name);
+                v1.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
+
+
+        if (v2.type.equals(VariableType.INT)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_i32(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        } else if (v2.type.equals(VariableType.DOUBLE)) {
+            if (isKnownVariable(v2.name)) {
+                LLVMGenerator.load_double(v2.name);
+                v2.name = "%" + (LLVMGenerator.reg - 1);
+            }
+        }
+
+        if (v1.type == v2.type) {
+
+            if (v1.type == VariableType.INT) {
                 LLVMGenerator.mult_i32(v1.name, v2.name);
                 stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.INT));
             }
@@ -387,12 +455,17 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitAssing_variable(VSCLLParser.Assing_variableContext ctx) {
-        String ID = ctx.ID().getText();
-        ID = variables.get(ID).address;
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
+
+        String variableName = ctx.ID().getText();
+        if (getVariable(variableName) == null)
+            error(ctx.getStart().getLine(), String.format("Variable '%s' not defined", variableName));
+        String ID = getVariable(variableName).address;
         StackValue v = stack.pop();
 
         if (isKnownVariable(ID)) {
-            VariableType variableType = variables.get(getVariableNameByAddressAndScope(ID,currentScope)).variableType;
+            VariableType variableType = getVariable(variableName).variableType;
 
             if (variableType.equals(VariableType.INT)) {
                 if (v.type.equals(VariableType.INT)) {
@@ -402,22 +475,20 @@ public class LLVMActions extends VSCLLBaseListener {
                     } else {
                         LLVMGenerator.assign_i32(ID, v.name);
                     }
-                }
-                else {
-                    error(ctx.getStart().getLine(),"assign type mismatch");
+                } else {
+                    error(ctx.getStart().getLine(), "assign type mismatch");
                 }
             }
             if (variableType.equals(VariableType.DOUBLE)) {
-                if(v.type.equals(VariableType.DOUBLE)) {
+                if (v.type.equals(VariableType.DOUBLE)) {
                     if (isKnownVariable(v.name)) {
                         LLVMGenerator.load_double(v.name);
                         LLVMGenerator.assign_double(ID, "%" + (LLVMGenerator.reg - 1));
                     } else {
                         LLVMGenerator.assign_double(ID, v.name);
                     }
-                }
-                else {
-                    error(ctx.getStart().getLine(),"assign type mismatch");
+                } else {
+                    error(ctx.getStart().getLine(), "assign type mismatch");
                 }
             }
 
@@ -427,16 +498,10 @@ public class LLVMActions extends VSCLLBaseListener {
 
     }
 
-//    @Override
-//    public void exitAssing_text_pointer(VSCLLParser.Assing_text_pointerContext ctx) {
-//        String text = ctx.STRING().getText();
-//        text = text.substring(1, text.length() - 1);
-//        LLVMGenerator.assign_text_pointer(ctx.ID().getText(), text);
-//        variables.put(ctx.ID().getText(), VariableType.TEXT_POINTER);
-//    }
-
     @Override
     public void exitAssing_to_array(VSCLLParser.Assing_to_arrayContext ctx) {
+        if (currentScope.equals("global"))
+            error(ctx.getStart().getLine(), "Expression cannot be used in global context");
         String name = ctx.ID().getText();
         String index = ctx.index().getText();
 
@@ -486,9 +551,9 @@ public class LLVMActions extends VSCLLBaseListener {
         if (currentValue.type.equals(VariableType.INT)) {
 
             if (isKnownVariable(currentValue.name)) {
-                LLVMGenerator.print_i32(currentValue.name,true);
+                LLVMGenerator.print_i32(currentValue.name, true);
             } else {
-                LLVMGenerator.print_i32(currentValue.name,false);
+                LLVMGenerator.print_i32(currentValue.name, false);
             }
         } else if (currentValue.type.equals(VariableType.DOUBLE)) {
 
@@ -497,7 +562,7 @@ public class LLVMActions extends VSCLLBaseListener {
             } else {
                 LLVMGenerator.print_double(currentValue.name, false);
             }
-        }  else {
+        } else {
             error(ctx.getStart().getLine(), "Unsupported value type");
         }
     }
@@ -508,17 +573,14 @@ public class LLVMActions extends VSCLLBaseListener {
         if (tables.containsKey(id)) {
             LLVMGenerator.print_char_array(tables.get(id).address, tables.get(id).size);
         } else if (variables.containsKey(id)) {
-            VariableType variableType = variables.get(id).variableType;
-            if(variableType.equals(VariableType.INT)) {
-                LLVMGenerator.print_i32_as_char(variables.get(id).address, true);
-            }
-            else if(variableType.equals(VariableType.TEXT_POINTER)) {
-                LLVMGenerator.print_text_pointer(variables.get(id).address);
-            }
-            else
+            VariableType variableType = getVariable(id).variableType;
+            if (variableType.equals(VariableType.INT)) {
+                LLVMGenerator.print_i32_as_char(getVariable(id).address, true);
+            } else if (variableType.equals(VariableType.TEXT_POINTER)) {
+                LLVMGenerator.print_text_pointer(getVariable(id).address);
+            } else
                 error(ctx.getStart().getLine(), "Can only display int or char");
-        }
-        else {
+        } else {
             error(ctx.getStart().getLine(), String.format("Variable '%s' doesn't exist", id));
         }
     }
@@ -569,12 +631,11 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitScani_id(VSCLLParser.Scani_idContext ctx) {
         String id = ctx.ID().getText();
-        if(variables.containsKey(id)) {
-            String address = variables.get(id).address;
+        if (variables.containsKey(id)) {
+            String address = getVariable(id).address;
             LLVMGenerator.scan_i32(address);
-        }
-        else {
-            error(ctx.getStart().getLine(),String.format("Variable '%s' doesn't exist",id));
+        } else {
+            error(ctx.getStart().getLine(), String.format("Variable '%s' doesn't exist", id));
         }
     }
 
@@ -617,12 +678,11 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitScand_id(VSCLLParser.Scand_idContext ctx) {
         String id = ctx.ID().getText();
-        if(variables.containsKey(id)) {
-            String address = variables.get(id).address;
+        if (variables.containsKey(id)) {
+            String address = getVariable(id).address;
             LLVMGenerator.scan_double(address);
-        }
-        else {
-            error(ctx.getStart().getLine(),String.format("Variable '%s' doesn't exist",id));
+        } else {
+            error(ctx.getStart().getLine(), String.format("Variable '%s' doesn't exist", id));
         }
     }
 
@@ -671,20 +731,20 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitCondition_equal(VSCLLParser.Condition_equalContext ctx) {
-        exitCondition(ctx.getStart().getLine(),ComparisonType.EQUAL);
+        exitCondition(ctx.getStart().getLine(), ComparisonType.EQUAL);
     }
 
     @Override
     public void exitCondition_less_than(VSCLLParser.Condition_less_thanContext ctx) {
-        exitCondition(ctx.getStart().getLine(),ComparisonType.LESS_THAN);
+        exitCondition(ctx.getStart().getLine(), ComparisonType.LESS_THAN);
     }
 
     @Override
     public void exitCondition_greater_than(VSCLLParser.Condition_greater_thanContext ctx) {
-        exitCondition(ctx.getStart().getLine(),ComparisonType.GREATER_THAN);
+        exitCondition(ctx.getStart().getLine(), ComparisonType.GREATER_THAN);
     }
 
-    public void exitCondition(int lineNumber, ComparisonType comparisonType) {
+    private void exitCondition(int lineNumber, ComparisonType comparisonType) {
         StackValue v2 = stack.pop();
         StackValue v1 = stack.pop();
 
@@ -715,25 +775,21 @@ public class LLVMActions extends VSCLLBaseListener {
         if (v1.type.equals(v2.type)) {
 
             if (v1.type == VariableType.INT) {
-                if(comparisonType.equals(ComparisonType.EQUAL)) {
+                if (comparisonType.equals(ComparisonType.EQUAL)) {
                     LLVMGenerator.compare_equal_i32(v1.name, v2.name);
-                }
-                else if(comparisonType.equals(ComparisonType.LESS_THAN)) {
+                } else if (comparisonType.equals(ComparisonType.LESS_THAN)) {
                     LLVMGenerator.compare_less_than_i32(v1.name, v2.name);
-                }
-                else if(comparisonType.equals(ComparisonType.GREATER_THAN)) {
+                } else if (comparisonType.equals(ComparisonType.GREATER_THAN)) {
                     LLVMGenerator.compare_greater_than_i32(v1.name, v2.name);
                 }
                 stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
             }
             if (v1.type == VariableType.DOUBLE) {
-                if(comparisonType.equals(ComparisonType.EQUAL)) {
+                if (comparisonType.equals(ComparisonType.EQUAL)) {
                     LLVMGenerator.compare_equal_double(v1.name, v2.name);
-                }
-                else if(comparisonType.equals(ComparisonType.LESS_THAN)) {
+                } else if (comparisonType.equals(ComparisonType.LESS_THAN)) {
                     LLVMGenerator.compare_less_than_double(v1.name, v2.name);
-                }
-                else if(comparisonType.equals(ComparisonType.GREATER_THAN)) {
+                } else if (comparisonType.equals(ComparisonType.GREATER_THAN)) {
                     LLVMGenerator.compare_greater_than_double(v1.name, v2.name);
                 }
                 stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
@@ -744,7 +800,6 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
 
-
     @Override
     public void enterIf_block(VSCLLParser.If_blockContext ctx) {
 
@@ -753,7 +808,7 @@ public class LLVMActions extends VSCLLBaseListener {
         String labelEnd = "L" + labelCounter;
         labelCounter++;
 
-        LLVMGenerator.conditional_jump(labelStart,labelEnd);
+        LLVMGenerator.conditional_jump(labelStart, labelEnd);
         LLVMGenerator.label(labelStart);
         labels.push(labelEnd);
     }
@@ -781,7 +836,7 @@ public class LLVMActions extends VSCLLBaseListener {
         String labelEnd = "L" + labelCounter;
         labelCounter++;
 
-        LLVMGenerator.conditional_jump(labelStart,labelEnd);
+        LLVMGenerator.conditional_jump(labelStart, labelEnd);
         LLVMGenerator.label(labelStart);
         labels.push(labelEnd);
     }
@@ -806,12 +861,12 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitFunction_parameter(VSCLLParser.Function_parameterContext ctx) {
         try {
-        if(ctx.var().getText().equals("int")) {
-            functionParams.add(new StackValue(ctx.ID().getText(),VariableType.INT));
-        }
-        if(ctx.var().getText().equals("double")) {
-            functionParams.add(new StackValue(ctx.ID().getText(),VariableType.DOUBLE));
-        }
+            if (ctx.var().getText().equals("int")) {
+                functionParams.add(new StackValue(ctx.ID().getText(), VariableType.INT));
+            }
+            if (ctx.var().getText().equals("double")) {
+                functionParams.add(new StackValue(ctx.ID().getText(), VariableType.DOUBLE));
+            }
         } catch (Exception ignored) {
 
         }
@@ -820,55 +875,59 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void enterFunction(VSCLLParser.FunctionContext ctx) {
-        if(ctx.function_type().getText().equals("int"))
-            currentType = VariableType.INT;
-        else if(ctx.function_type().getText().equals("double"))
-            currentType = VariableType.DOUBLE;
-        else if(ctx.function_type().getText().equals("void"))
-            currentType = VariableType.VOID;
+        switch (ctx.function_type().getText()) {
+            case "int":
+                currentType = VariableType.INT;
+                break;
+            case "double":
+                currentType = VariableType.DOUBLE;
+                break;
+            case "void":
+                currentType = VariableType.VOID;
+                break;
+        }
 
         currentScope = ctx.ID().getText();
 
-        functions.put(currentScope,new FunctionInfo(currentType));
+        functions.put(currentScope, new FunctionInfo(currentType));
 
     }
 
     @Override
     public void enterFunction_block(VSCLLParser.Function_blockContext ctx) {
         String type = "";
-        String params = "";
+        StringBuilder params = new StringBuilder();
         String name = currentScope;
-        if(currentType.equals(VariableType.INT)) {
+        if (currentType.equals(VariableType.INT)) {
             type = "i32";
-        }
-        else if (currentType.equals(VariableType.DOUBLE)) {
+        } else if (currentType.equals(VariableType.DOUBLE)) {
             type = "double";
         }
 
 
-        for(StackValue stackValue : functionParams) {
-            if(stackValue.type.equals(VariableType.INT))
-                params += "i32, ";
+        for (StackValue stackValue : functionParams) {
+            if (stackValue.type.equals(VariableType.INT))
+                params.append("i32, ");
             else if (stackValue.type.equals(VariableType.DOUBLE))
-                params += "double, ";
-            functions.get(currentScope).parametersTypes.add(0,stackValue.type);
+                params.append("double, ");
+            functions.get(currentScope).parametersTypes.add(0, stackValue.type);
         }
-        params = params.trim();
+        params = new StringBuilder(params.toString().trim());
 
-        if(params.endsWith(","))
-            params = params.substring(0,params.length()-1);
+        if (params.toString().endsWith(","))
+            params = new StringBuilder(params.substring(0, params.length() - 1));
 
-        LLVMGenerator.defineFunction(type,name,params,functionParams.size());
+        LLVMGenerator.defineFunction(type, name, params.toString(), functionParams.size());
 
         int counter = 0;
-        for(StackValue stackValue : functionParams) {
-            if(stackValue.type.equals(VariableType.INT)) {
+        for (StackValue stackValue : functionParams) {
+            if (stackValue.type.equals(VariableType.INT)) {
                 LLVMGenerator.declare_i32_local();
-                if(isAlreadyDefined(stackValue.name,currentScope)) {
-                    error(ctx.getStart().getLine(),"Duplicate parameters names");
+                if (isAlreadyDefined(stackValue.name, currentScope)) {
+                    error(ctx.getStart().getLine(), "Duplicate parameters names");
                 }
-                variables.put(stackValue.name,new VariableInfo(VariableType.INT,"%"+(LLVMGenerator.reg-1),currentScope));
-                LLVMGenerator.assign_i32(variables.get(stackValue.name).address,"%" + counter++);
+                variables.put(stackValue.name, new VariableInfo(VariableType.INT, "%" + (LLVMGenerator.reg - 1), currentScope));
+                LLVMGenerator.assign_i32(getVariable(stackValue.name).address, "%" + counter++);
             }
         }
 
@@ -877,16 +936,15 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void exitReturn_statement(VSCLLParser.Return_statementContext ctx) {
-        if(ctx.expression() == null) {
-            LLVMGenerator.return_statement("void","");
-        }
-        else {
+        if (ctx.expression() == null) {
+            LLVMGenerator.return_statement("void", "");
+        } else {
             StackValue stackValue = stack.pop();
             String type = "";
 
-            if(currentType.equals(VariableType.INT))
+            if (currentType.equals(VariableType.INT))
                 type = "i32";
-            else if(currentType.equals(VariableType.DOUBLE))
+            else if (currentType.equals(VariableType.DOUBLE))
                 type = "double";
 
             if (stackValue.type.equals(VariableType.INT)) {
@@ -919,7 +977,7 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitExpressions_list(VSCLLParser.Expressions_listContext ctx) {
         functionParams.clear();
-        while(!stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             StackValue stackValue = stack.pop();
             functionParams.add(stackValue);
         }
@@ -929,31 +987,30 @@ public class LLVMActions extends VSCLLBaseListener {
     public void exitFunction_call(VSCLLParser.Function_callContext ctx) {
         String functionName = ctx.ID().getText();
         String type = "";
-        if(functionParams.size() == functions.get(functionName).parametersTypes.size()) {
-            String params = "";
-            for(int i = functionParams.size()-1; i >= 0; i--) {
+        if (functionParams.size() == functions.get(functionName).parametersTypes.size()) {
+            StringBuilder params = new StringBuilder();
+            for (int i = functionParams.size() - 1; i >= 0; i--) {
                 StackValue sv = functionParams.get(i);
 
-                if(sv.type.equals(VariableType.INT))
+                if (sv.type.equals(VariableType.INT))
                     type = "i32";
                 else if (sv.type.equals(VariableType.DOUBLE))
                     type = "double";
 
-                params += type + " " + sv.name + ", ";
+                params.append(type).append(" ").append(sv.name).append(", ");
             }
-            params = params.trim();
-            if(params.endsWith(","))
-                params = params.substring(0,params.length()-1);
+            params = new StringBuilder(params.toString().trim());
+            if (params.toString().endsWith(","))
+                params = new StringBuilder(params.substring(0, params.length() - 1));
 
-            if(functions.get(functionName).functionType.equals(VariableType.INT))
+            if (functions.get(functionName).functionType.equals(VariableType.INT))
                 type = "i32";
             else if (functions.get(functionName).functionType.equals(VariableType.DOUBLE))
                 type = "double";
 
-            LLVMGenerator.callFunction(functionName,params,type);
-        }
-        else {
-            error(ctx.getStart().getLine(),"Incorrect number of parameters in a function call");
+            LLVMGenerator.callFunction(functionName, params.toString(), type);
+        } else {
+            error(ctx.getStart().getLine(), "Incorrect number of parameters in a function call");
         }
 
     }
@@ -967,6 +1024,7 @@ public class LLVMActions extends VSCLLBaseListener {
 
     @Override
     public void enterProg(VSCLLParser.ProgContext ctx) {
+        currentScope = "global";
     }
 
     @Override
@@ -981,33 +1039,51 @@ public class LLVMActions extends VSCLLBaseListener {
     }
 
     private boolean isKnownVariable(String toCheck) {
-        for(VariableInfo variableInfo: variables.values()) {
-            if(variableInfo.address.equals(toCheck))
+        for (VariableInfo variableInfo : variables.values()) {
+            if (variableInfo.address.equals(toCheck) && (variableInfo.scope.equals(currentScope) || variableInfo.scope.equals("global")))
                 return true;
         }
         return false;
     }
 
-    private String getVariableNameByAddressAndScope(String address, String scope) {
-        for(String key : variables.keySet()) {
-            if(variables.get(key).address.equals(address) && variables.get(key).scope.equals(scope))
-                return key;
-        }
-        return null;
-    }
 
+    /**
+     * Checks if variable is defined in current scope
+     *
+     * @param name  Variable name
+     * @param scope Scope to check
+     * @return Boolean if variable is already defined in a current scope
+     */
     private boolean isAlreadyDefined(String name, String scope) {
-        if(tables.containsKey(name)) {
+        if (tables.containsKey(name)) {
             Table table = tables.get(name);
-            if(table.scope.equals(scope))
-                return true;
-        }
-        else if (variables.containsKey(name)) {
+            return table.scope.equals(scope);
+        } else if (variables.containsKey(name)) {
             VariableInfo variableInfo = variables.get(name);
-            if(variableInfo.scope.equals(scope))
-                return true;
+            return variableInfo.scope.equals(scope);
         }
         return false;
+    }
+
+    /**
+     * Get's variable from scope of the function, or global scope (in that order). Returs null if variable doesn't
+     * exist
+     *
+     * @param id Variable name
+     * @return VariableInfo object of proper variable
+     */
+    private VariableInfo getVariable(String id) {
+        VariableInfo backup = null;
+        for (String s : variables.keySet()) {
+            if (s.equals(id)) {
+                if (variables.get(s).scope.equals(currentScope))
+                    return variables.get(s);
+                else if (variables.get(s).scope.equals("global"))
+                    backup = variables.get(s);
+            }
+        }
+        return backup;
+
     }
 
 }

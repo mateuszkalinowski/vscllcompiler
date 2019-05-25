@@ -1,5 +1,9 @@
 package pl.mateuszkalinowski.vscllcompiler.llvm;
 
+
+/**
+ * Generates LLVM code, compile .ll file using llc, then use clang on produced .s file, then run ./a.out
+ */
 class LLVMGenerator {
 
     private static String header_text = "";
@@ -16,32 +20,6 @@ class LLVMGenerator {
         reg++;
         main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 %" + (reg - 1) + ")\n";
         reg++;
-    }
-
-    static void print_i8_as_char(String id, boolean isKnownVariable) {
-        if(isKnownVariable) {
-            load_i8(id);
-            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 %" + (reg - 1) + ")\n";
-            reg++;
-        }
-        else {
-            i8toi32("%" + (reg - 1));
-            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i32 " + id + ")\n";
-            reg++;
-        }
-    }
-
-    static void print_i8(String id, boolean isKnownVariable) {
-        if (isKnownVariable) {
-            load_i8(id);
-            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i8 %" + (reg - 1) + ")\n";
-            reg++;
-        }
-        else {
-            main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strp, i32 0, i32 0), i8 " + id + ")\n";
-            reg++;
-        }
-
     }
 
     static void print_i32(String id, boolean isKnownVariable) {
@@ -127,11 +105,6 @@ class LLVMGenerator {
         reg++;
     }
 
-    static void declare_i8_local() {
-        main_text += "%" + reg + " = alloca i8, align 1\n";
-        reg++;
-    }
-
     static void declare_i32_local() {
         main_text += "%" + reg + " = alloca i32\n";
         reg++;
@@ -142,8 +115,26 @@ class LLVMGenerator {
         reg++;
     }
 
-    static void declare_text_pointer() {
+    static void declare_i32_global(String name, String value) {
+        main_text += "@" + name + " = global i32 "+value+", align 4\n";
+        reg++;
+    }
+
+    static void declare_double_global(String name, String value) {
+        main_text += "@" + name + " =  global double "+value+", align 8\n";
+        reg++;
+    }
+
+    static void declare_text_pointer_local() {
         main_text += "%" + reg + " = alloca i8*, align 8\n";
+        reg++;
+    }
+
+    static void declare_text_pointer_global(String name, String content) {
+
+        String size = String.valueOf(content.length()+1);
+
+        main_text += "@" + name + " = global ["+size+" x i8] c\""+content+"\\00\", align 1";
         reg++;
     }
 
@@ -155,15 +146,6 @@ class LLVMGenerator {
     static void declare_double_array_local(String size) {
         main_text += "%" + reg + " = alloca [" + size + " x double], align 16\n";
         reg++;
-    }
-
-    static void declare_char_array_local(String size) {
-        main_text += "%" + reg + " = alloca [" + size + " x i8], align 1\n";
-        reg++;
-    }
-
-    static void assign_i8(String id, String value) {
-        main_text += "store i8 " + value + ", i8* " + id + "\n";
     }
 
     static void assign_i32(String id, String value) {
@@ -194,17 +176,6 @@ class LLVMGenerator {
         main_text += "store double " + value + ", double* %" + (reg - 1) + ", align 8\n";
     }
 
-    static void assign_char_array(String id, String index, String value, String size) {
-        main_text += "%" + reg + " = getelementptr inbounds [" + size + " x i8], [" + size + " x i8]* " + id + ", i64 0, i64 " + index + "\n";
-        reg++;
-        main_text += "store i8 " + value + ", i8* %" + (reg - 1) + ", align 1\n";
-    }
-
-    static void load_i8(String id) {
-        main_text += "%" + reg + " =  load i8, i8* " + id + ", align 1\n";
-        reg++;
-    }
-
     static void load_i32(String id) {
         main_text += "%" + reg + " = load i32, i32* " + id + "\n";
         reg++;
@@ -212,13 +183,6 @@ class LLVMGenerator {
 
     static void load_double(String id) {
         main_text += "%" + reg + " = load double, double* " + id + "\n";
-        reg++;
-    }
-
-    static void load_i8_array(String id, String index, String size) {
-        main_text += "%" + reg + " = getelementptr inbounds [" + size + " x i8], [" + size + " x i8]* " + id + ", i64 0, i64 " + index + "\n";
-        reg++;
-        main_text += "%" + reg + " = load i8, i8* %" + (reg - 1) + ", align 1\n";
         reg++;
     }
 
@@ -273,11 +237,6 @@ class LLVMGenerator {
 
     static void fptosi(String id) {
         main_text += "%" + reg + " = fptosi double " + id + " to i32\n";
-        reg++;
-    }
-
-    static void i8toi32(String id) {
-        main_text += "%" + reg + " = sext i8 " + id + " to i32\n";
         reg++;
     }
 
@@ -356,9 +315,7 @@ class LLVMGenerator {
         text += "@.str.3 = constant [4 x i8] c\"%s\\0A\\00\"\n";
         text += "@.str.4 = constant [4 x i8] c\"%c\\0A\\00\", align 1\n";
         text += header_text;
-      //  text += "define i32 @main() nounwind{\n";
         text += main_text;
-      //  text += "ret i32 0 }\n";
         return text;
     }
 }
