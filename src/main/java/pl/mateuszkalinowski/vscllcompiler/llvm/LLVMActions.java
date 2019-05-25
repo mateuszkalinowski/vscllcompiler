@@ -986,6 +986,8 @@ public class LLVMActions extends VSCLLBaseListener {
     @Override
     public void exitFunction_call(VSCLLParser.Function_callContext ctx) {
         String functionName = ctx.ID().getText();
+        if(!functions.containsKey(functionName))
+            error(ctx.getStart().getLine(),String.format("Function '%s' doesn't exists",functionName));
         String type = "";
         if (functionParams.size() == functions.get(functionName).parametersTypes.size()) {
             StringBuilder params = new StringBuilder();

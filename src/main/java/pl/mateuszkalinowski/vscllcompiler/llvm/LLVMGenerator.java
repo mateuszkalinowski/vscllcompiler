@@ -130,14 +130,6 @@ class LLVMGenerator {
         reg++;
     }
 
-    static void declare_text_pointer_global(String name, String content) {
-
-        String size = String.valueOf(content.length()+1);
-
-        main_text += "@" + name + " = global ["+size+" x i8] c\""+content+"\\00\", align 1";
-        reg++;
-    }
-
     static void declare_i32_array_local(String size) {
         main_text += "%" + reg + " = alloca [" + size + " x i32], align 16\n";
         reg++;
@@ -298,7 +290,7 @@ class LLVMGenerator {
         main_text += "}\n";
     }
 
-    public static void callFunction(String functionName, String params, String type) {
+    static void callFunction(String functionName, String params, String type) {
         main_text += "%" + reg + " = call " + type + " @" + functionName + "(" + params + ")\n";
         reg++;
     }

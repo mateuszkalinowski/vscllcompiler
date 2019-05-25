@@ -1,6 +1,21 @@
-char tekst[] = "ala";
+
 
 int main() {
-prints(tekst);
-return 0;
+    double x = 5.5;
+    int y = (int) x;
+    print(y);
+
+    if(x == 5.5) {
+    prints("tak");
+    }
+
+    int tab[5];
+     tab[0] = 'A';
+     tab[1] = 'B';
+     tab[2] = 'C';
+     tab[3] = 'D';
+     tab[4] = '0';
+     prints(tab);
+
+    return 0;
 }
