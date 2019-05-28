@@ -782,7 +782,7 @@ public class LLVMActions extends VSCLLBaseListener {
                 } else if (comparisonType.equals(ComparisonType.GREATER_THAN)) {
                     LLVMGenerator.compare_greater_than_i32(v1.name, v2.name);
                 }
-                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
+             //   stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
             }
             if (v1.type == VariableType.DOUBLE) {
                 if (comparisonType.equals(ComparisonType.EQUAL)) {
@@ -792,11 +792,12 @@ public class LLVMActions extends VSCLLBaseListener {
                 } else if (comparisonType.equals(ComparisonType.GREATER_THAN)) {
                     LLVMGenerator.compare_greater_than_double(v1.name, v2.name);
                 }
-                stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
+               // stack.push(new StackValue("%" + (LLVMGenerator.reg - 1), VariableType.BOOLEAN));
             }
         } else {
             error(lineNumber, "comparison type mismatch");
         }
+
     }
 
 
@@ -902,6 +903,8 @@ public class LLVMActions extends VSCLLBaseListener {
             type = "i32";
         } else if (currentType.equals(VariableType.DOUBLE)) {
             type = "double";
+        } else if (currentType.equals(VariableType.VOID)) {
+            type = "void";
         }
 
 
@@ -979,6 +982,19 @@ public class LLVMActions extends VSCLLBaseListener {
         functionParams.clear();
         while (!stack.isEmpty()) {
             StackValue stackValue = stack.pop();
+
+            if (stackValue.type.equals(VariableType.INT)) {
+                if (isKnownVariable(stackValue.name)) {
+                    LLVMGenerator.load_i32(stackValue.name);
+                    stackValue.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            } else if (stackValue.type.equals(VariableType.DOUBLE)) {
+                if (isKnownVariable(stackValue.name)) {
+                    LLVMGenerator.load_double(stackValue.name);
+                    stackValue.name = "%" + (LLVMGenerator.reg - 1);
+                }
+            }
+
             functionParams.add(stackValue);
         }
     }
@@ -1005,12 +1021,18 @@ public class LLVMActions extends VSCLLBaseListener {
             if (params.toString().endsWith(","))
                 params = new StringBuilder(params.substring(0, params.length() - 1));
 
-            if (functions.get(functionName).functionType.equals(VariableType.INT))
+            if (functions.get(functionName).functionType.equals(VariableType.INT)) {
                 type = "i32";
-            else if (functions.get(functionName).functionType.equals(VariableType.DOUBLE))
+                LLVMGenerator.callFunction(functionName, params.toString(), type);
+            }
+            else if (functions.get(functionName).functionType.equals(VariableType.DOUBLE)) {
                 type = "double";
+                LLVMGenerator.callFunction(functionName, params.toString(), type);
+            }
+            else if (functions.get(functionName).functionType.equals(VariableType.VOID)) {
+                LLVMGenerator.callFunction_void(functionName, params.toString());
+            }
 
-            LLVMGenerator.callFunction(functionName, params.toString(), type);
         } else {
             error(ctx.getStart().getLine(), "Incorrect number of parameters in a function call");
         }
@@ -1039,6 +1061,8 @@ public class LLVMActions extends VSCLLBaseListener {
         System.err.println("Error, line " + line + ", " + msg);
         System.exit(1);
     }
+
+
 
     private boolean isKnownVariable(String toCheck) {
         for (VariableInfo variableInfo : variables.values()) {

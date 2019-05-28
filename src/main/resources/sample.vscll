@@ -1,21 +1,33 @@
 
+int suma(int x, int y) {
+    int a = 10;
+    prints("Funkcja suma");
+    print(a);
+    return x + y;
+}
+
+
+void wypisz(int i) {
+
+   while (i > 0) {
+   if( i < 2) {
+       prints("Juz prawie koniec, 'i' mniejsze od dwoch");
+      }
+   print(i);
+   i = i - 1;
+   }
+    return;
+}
 
 int main() {
-    double x = 5.5;
-    int y = (int) x;
-    print(y);
-
-    if(x == 5.5) {
-    prints("tak");
-    }
-
-    int tab[5];
-     tab[0] = 'A';
-     tab[1] = 'B';
-     tab[2] = 'C';
-     tab[3] = 'D';
-     tab[4] = '0';
-     prints(tab);
-
+    int a = 5;
+    prints("Funkcja main");
+    print(a);
+    int x = 5;
+    int y = 10;
+    int c = suma(x,y);
+    print(c);
+    print(suma(x,y));
+    wypisz(3);
     return 0;
 }
